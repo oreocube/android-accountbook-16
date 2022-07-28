@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.R
+import com.woowahantechcamp.account_book.ui.component.CategoryTag
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.TextItem
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.CategoryItem
@@ -100,33 +100,26 @@ fun Body(
             color = Purple40,
             thickness = 1.dp
         )
-        Row(modifier.clickable { onItemClick(item.title) }) {
+        Row(
+            modifier
+                .padding(0.dp, 12.dp)
+                .clickable { onItemClick(item.title) }
+        ) {
             Text(
                 text = item.title,
                 color = MaterialTheme.colors.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = modifier
-                    .padding(0.dp, 12.dp)
                     .weight(1f)
+                    .align(Alignment.CenterVertically)
             )
             if (item is CategoryItem) {
-                Surface(
-                    modifier = Modifier
-                        .width(60.dp)
-                        .align(Alignment.CenterVertically),
-                    color = item.color,
-                    shape = RoundedCornerShape(50.dp)
-                ) {
-                    Text(
-                        text = item.title,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(8.dp, 4.dp)
-                    )
-
-                }
+                CategoryTag(
+                    modifier = modifier.align(Alignment.CenterVertically),
+                    title = item.title,
+                    color = item.color
+                )
             }
         }
     }
@@ -150,7 +143,8 @@ fun Footer(modifier: Modifier, title: String) {
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_plus),
-                contentDescription = "plus"
+                contentDescription = "plus",
+                tint = MaterialTheme.colors.primary
             )
         }
     }
