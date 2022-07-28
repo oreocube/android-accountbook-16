@@ -15,8 +15,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigation
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookScreen
+import com.woowahantechcamp.account_book.ui.screen.setting.SettingScreen
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 
 class MainActivity : ComponentActivity() {
@@ -53,7 +55,7 @@ fun AccountBookApp() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = AccountBookScreen.History.route) {
-                    Text(AccountBookScreen.History.route)
+                    HistoryScreen(year = 2022, month = 7)
                 }
                 composable(route = AccountBookScreen.Calendar.route) {
                     Text(AccountBookScreen.Calendar.route)
@@ -62,7 +64,7 @@ fun AccountBookApp() {
                     Text(AccountBookScreen.Graph.route)
                 }
                 composable(route = AccountBookScreen.Setting.route) {
-                    Text(AccountBookScreen.Setting.route)
+                    SettingScreen()
                 }
             }
         }
