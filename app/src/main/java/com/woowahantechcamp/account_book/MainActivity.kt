@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,7 +22,9 @@ import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigat
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookScreen
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingScreen
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
