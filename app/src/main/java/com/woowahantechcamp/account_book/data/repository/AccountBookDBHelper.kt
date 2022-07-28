@@ -35,7 +35,7 @@ class AccountBookDBHelper(
                 "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
                 "$COLUMN_NAME_TYPE INTEGER NOT NULL, " +
                 "$COLUMN_NAME_TITLE TEXT NOT NULL, " +
-                "$COLUMN_NAME_COLOR INTEGER NOT NULL)"
+                "$COLUMN_NAME_COLOR TEXT NOT NULL)"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
