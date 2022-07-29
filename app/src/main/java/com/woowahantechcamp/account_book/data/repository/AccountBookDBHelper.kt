@@ -3,45 +3,20 @@ package com.woowahantechcamp.account_book.data.repository
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.provider.BaseColumns
+import com.woowahantechcamp.account_book.data.SQL_CREATE_CATEGORY_TABLE
+import com.woowahantechcamp.account_book.data.SQL_CREATE_HISTORY_TABLE
+import com.woowahantechcamp.account_book.data.SQL_CREATE_PAYMENT_TABLE
+import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
 
 class AccountBookDBHelper(
     context: Context
 ) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    private val historyTableCreateSQL = with(HistoryEntry) {
-        "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
-                "$COLUMN_NAME_TYPE INTEGER NOT NULL, " +
-                "$COLUMN_NAME_DATE DATE NOT NULL, " +
-                "$COLUMN_NAME_AMOUNT INTEGER NOT NULL, " +
-                "$COLUMN_NAME_PAYMENT_ID INTEGER NOT NULL, " +
-                "$COLUMN_NAME_CATEGORY_ID INTEGER NOT NULL, " +
-                "$COLUMN_NAME_CONTENT TEXT, " +
-                "FOREIGN KEY (${COLUMN_NAME_PAYMENT_ID}) " +
-                "REFERENCES ${PaymentEntry.TABLE_NAME} (${BaseColumns._ID}), " +
-                "FOREIGN KEY (${COLUMN_NAME_CATEGORY_ID}) " +
-                "REFERENCES ${CategoryEntry.TABLE_NAME} (${BaseColumns._ID}))"
-    }
-
-    private val paymentTableCreateSQL = with(PaymentEntry) {
-        "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
-                "$COLUMN_NAME_TITLE TEXT NOT NULL)"
-    }
-
-    private val categoryTableCreateSQL = with(CategoryEntry) {
-        "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
-                "$COLUMN_NAME_TYPE INTEGER NOT NULL, " +
-                "$COLUMN_NAME_TITLE TEXT NOT NULL, " +
-                "$COLUMN_NAME_COLOR TEXT NOT NULL)"
-    }
-
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(paymentTableCreateSQL)
-        db.execSQL(categoryTableCreateSQL)
-        db.execSQL(historyTableCreateSQL)
+        db.execSQL(SQL_SET_PRAGMA)
+        db.execSQL(SQL_CREATE_PAYMENT_TABLE)
+        db.execSQL(SQL_CREATE_CATEGORY_TABLE)
+        db.execSQL(SQL_CREATE_HISTORY_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

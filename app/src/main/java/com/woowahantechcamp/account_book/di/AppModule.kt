@@ -2,8 +2,8 @@ package com.woowahantechcamp.account_book.di
 
 import android.content.Context
 import com.woowahantechcamp.account_book.data.repository.AccountBookDBHelper
-import com.woowahantechcamp.account_book.data.repository.category.CategoryRepository
-import com.woowahantechcamp.account_book.data.repository.category.CategoryDataSource
+import com.woowahantechcamp.account_book.data.repository.AccountBookRepository
+import com.woowahantechcamp.account_book.data.repository.AccountBookDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,13 +27,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCategoryDataSource(
+    fun provideDataSource(
         dbHelper: AccountBookDBHelper,
         ioDispatcher: CoroutineDispatcher
-    ) = CategoryDataSource(dbHelper, ioDispatcher)
+    ) = AccountBookDataSource(dbHelper, ioDispatcher)
 
     @Singleton
     @Provides
-    fun provideCategoryRepository(categoryDataSource: CategoryDataSource) =
-        CategoryRepository(categoryDataSource)
+    fun provideRepository(accountBookDatasource: AccountBookDataSource) =
+        AccountBookRepository(accountBookDatasource)
 }

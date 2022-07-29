@@ -14,12 +14,12 @@ object HistoryEntry : BaseColumns {
 
 object PaymentEntry : BaseColumns {
     const val TABLE_NAME = "payment"
-    const val COLUMN_NAME_TITLE = "title"
+    const val COLUMN_NAME_TITLE = "payment_title"
 }
 
 object CategoryEntry : BaseColumns {
     const val TABLE_NAME = "category"
     const val COLUMN_NAME_TYPE = "type"
-    const val COLUMN_NAME_TITLE = "title"
+    const val COLUMN_NAME_TITLE = "category_title"
     const val COLUMN_NAME_COLOR = "color"
 }
