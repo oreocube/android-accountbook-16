@@ -68,7 +68,6 @@ fun SettingScreen() {
             thickness = 1.dp
         )
         SettingList(
-            modifier = Modifier.fillMaxWidth(),
             grouped = mapOf(payments, expenses, incomes),
             onItemClick = {},
             onAddClick = {}
@@ -77,46 +76,50 @@ fun SettingScreen() {
 }
 
 @Composable
-fun Header(modifier: Modifier, title: String) {
-    Column(modifier) {
-        Spacer(modifier = modifier.padding(top = 16.dp))
+fun Header(title: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.padding(top = 16.dp))
         Text(
             text = title,
             color = LightPurple,
             fontSize = 18.sp,
-            modifier = modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(16.dp, 8.dp)
         )
     }
 }
 
 @Composable
 fun Body(
-    modifier: Modifier,
     item: SettingItem,
     onItemClick: (String) -> Unit
 ) {
-    Column(modifier) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onItemClick(item.title) }
+        .padding(horizontal = 16.dp)
+    ) {
         Divider(
             color = Purple40,
             thickness = 1.dp
         )
         Row(
-            modifier
-                .padding(0.dp, 12.dp)
-                .clickable { onItemClick(item.title) }
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
         ) {
             Text(
                 text = item.title,
                 color = MaterialTheme.colors.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = modifier
-                    .weight(1f)
+                modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f)
+
             )
             if (item is CategoryItem) {
                 CategoryTag(
-                    modifier = modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     title = item.title,
                     color = item.color
                 )
@@ -127,24 +130,29 @@ fun Body(
 }
 
 @Composable
-fun Footer(modifier: Modifier, title: String) {
-    Column(modifier) {
+fun Footer(title: String, onAddClick: () -> Unit) {
+    Column(modifier = Modifier
+        .clickable { onAddClick() }
+        .padding(horizontal = 16.dp)) {
         Divider(
             color = Purple40,
             thickness = 1.dp
         )
-        Row(modifier.padding(0.dp, 12.dp)) {
+        Row(modifier = Modifier.padding(0.dp, 12.dp)) {
             Text(
                 text = "$title 추가하기",
                 color = MaterialTheme.colors.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_plus),
                 contentDescription = "plus",
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
     }
@@ -152,27 +160,25 @@ fun Footer(modifier: Modifier, title: String) {
 
 @Composable
 fun SettingList(
-    modifier: Modifier,
     grouped: Map<String, List<SettingItem>>,
     onItemClick: (String) -> Unit,
     onAddClick: () -> Unit
 ) {
-    LazyColumn(modifier.padding(16.dp)) {
+    LazyColumn {
         grouped.forEach { (title, list) ->
             item {
-                Header(title = title, modifier = modifier)
+                Header(title = title)
             }
             items(list) { item ->
                 Body(
-                    modifier = modifier,
                     item = item,
                     onItemClick = onItemClick
                 )
             }
             item {
                 Footer(
-                    modifier = modifier.clickable { onAddClick() },
-                    title = title
+                    title = title,
+                    onAddClick = onAddClick
                 )
                 Divider(
                     color = Purple,
