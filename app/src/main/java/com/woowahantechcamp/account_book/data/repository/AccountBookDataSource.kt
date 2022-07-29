@@ -63,6 +63,44 @@ class AccountBookDataSource @Inject constructor(
             }
         }
 
+    suspend fun updateCategory(
+        categoryId: Int,
+        title: String?,
+        color: String?
+    ): Int = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            val values = ContentValues().apply {
+                title?.let { put(CategoryEntry.COLUMN_NAME_TITLE, title) }
+                color?.let { put(CategoryEntry.COLUMN_NAME_COLOR, color) }
+            }
+
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$categoryId")
+
+            update(
+                CategoryEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+            )
+        }
+    }
+
+    suspend fun deleteCategory(
+        categoryId: Int
+    ): Int = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$categoryId")
+
+            delete(
+                CategoryEntry.TABLE_NAME,
+                selection,
+                selectionArgs
+            )
+        }
+    }
+
     suspend fun getAllPaymentMethod(): List<PaymentEntity> = withContext(ioDispatcher) {
         dbHelper.readableDatabase.run {
             val projection = arrayOf(
@@ -100,6 +138,42 @@ class AccountBookDataSource @Inject constructor(
                 insert(PaymentEntry.TABLE_NAME, null, values)
             }
         }
+
+    suspend fun updatePaymentMethod(
+        paymentId: Int,
+        title: String?
+    ): Int = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            val values = ContentValues().apply {
+                title?.let { put(PaymentEntry.COLUMN_NAME_TITLE, title) }
+            }
+
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$paymentId")
+
+            update(
+                PaymentEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+            )
+        }
+    }
+
+    suspend fun deletePaymentMethod(
+        paymentId: Int
+    ): Int = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$paymentId")
+
+            delete(
+                PaymentEntry.TABLE_NAME,
+                selection,
+                selectionArgs
+            )
+        }
+    }
 
     suspend fun getAllHistory(startDate: String, endDate: String): List<HistoryEntity> =
         withContext(ioDispatcher) {
@@ -144,7 +218,55 @@ class AccountBookDataSource @Inject constructor(
                 put(HistoryEntry.COLUMN_NAME_CONTENT, item.content)
             }
 
-            insert(CategoryEntry.TABLE_NAME, null, values)
+            insert(HistoryEntry.TABLE_NAME, null, values)
+        }
+    }
+
+    suspend fun updateHistory(
+        id: Int,
+        date: String?,
+        type: Int?,
+        amount: Int?,
+        content: String?,
+        paymentId: Int?,
+        categoryId: Int?
+    ) = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            execSQL(SQL_SET_PRAGMA)
+
+            val values = ContentValues().apply {
+                date?.let { put(HistoryEntry.COLUMN_NAME_DATE, date) }
+                type?.let { put(HistoryEntry.COLUMN_NAME_TYPE, type) }
+                amount?.let { put(HistoryEntry.COLUMN_NAME_AMOUNT, amount) }
+                content?.let { put(HistoryEntry.COLUMN_NAME_CONTENT, content) }
+                paymentId?.let { put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId) }
+                categoryId?.let { put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, categoryId) }
+            }
+
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$id")
+
+            update(
+                HistoryEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+            )
+        }
+    }
+
+    suspend fun deleteHistory(
+        id: Int
+    ): Int = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            val selection = "${BaseColumns._ID} = ?"
+            val selectionArgs = arrayOf("$id")
+
+            delete(
+                HistoryEntry.TABLE_NAME,
+                selection,
+                selectionArgs
+            )
         }
     }
 }
