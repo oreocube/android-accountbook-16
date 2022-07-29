@@ -8,7 +8,7 @@ enum class Type {
 data class HistoryModel(
     val date: String,
     val type: Type,
-    val title: String,
+    val content: String?,
     val amount: Int,
     val payment: String,
     val category: String,

@@ -2,7 +2,10 @@ package com.woowahantechcamp.account_book.data.repository
 
 import android.content.ContentValues
 import android.provider.BaseColumns
+import com.woowahantechcamp.account_book.data.SQL_SELECT_ALL_HISTORIES
+import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
+import com.woowahantechcamp.account_book.data.entity.HistoryEntity
 import com.woowahantechcamp.account_book.data.entity.PaymentEntity
 import com.woowahantechcamp.account_book.util.query
 import kotlinx.coroutines.CoroutineDispatcher
@@ -47,17 +50,18 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun insertCategory(item: CategoryEntity): Long = withContext(ioDispatcher) {
-        dbHelper.writableDatabase.run {
-            val values = ContentValues().apply {
-                put(CategoryEntry.COLUMN_NAME_TYPE, item.type)
-                put(CategoryEntry.COLUMN_NAME_TITLE, item.title)
-                put(CategoryEntry.COLUMN_NAME_COLOR, item.color)
-            }
+    suspend fun insertCategory(type: Int, title: String, color: String): Long =
+        withContext(ioDispatcher) {
+            dbHelper.writableDatabase.run {
+                val values = ContentValues().apply {
+                    put(CategoryEntry.COLUMN_NAME_TYPE, type)
+                    put(CategoryEntry.COLUMN_NAME_TITLE, title)
+                    put(CategoryEntry.COLUMN_NAME_COLOR, color)
+                }
 
-            insert(CategoryEntry.TABLE_NAME, null, values)
+                insert(CategoryEntry.TABLE_NAME, null, values)
+            }
         }
-    }
 
     suspend fun getAllPaymentMethod(): List<PaymentEntity> = withContext(ioDispatcher) {
         dbHelper.readableDatabase.run {
@@ -96,4 +100,51 @@ class AccountBookDataSource @Inject constructor(
                 insert(PaymentEntry.TABLE_NAME, null, values)
             }
         }
+
+    suspend fun getAllHistory(startDate: String, endDate: String): List<HistoryEntity> =
+        withContext(ioDispatcher) {
+            dbHelper.readableDatabase.run {
+                val cursor = rawQuery(SQL_SELECT_ALL_HISTORIES, arrayOf(startDate, endDate))
+
+                val items = mutableListOf<HistoryEntity>()
+                with(cursor) {
+                    while (moveToNext()) {
+                        items.add(
+                            HistoryEntity(
+                                id = getInt(getColumnIndexOrThrow(BaseColumns._ID)),
+                                date = getString(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_DATE)),
+                                type = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_TYPE)),
+                                content = getString(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_CONTENT)),
+                                amount = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_AMOUNT)),
+                                paymentId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
+                                paymentTitle = getString(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
+                                categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
+                                categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
+                                color = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                            )
+                        )
+                    }
+                }
+                cursor.close()
+
+                items
+            }
+        }
+
+    suspend fun insertHistoryItem(item: HistoryEntity) = withContext(ioDispatcher) {
+        dbHelper.writableDatabase.run {
+            execSQL(SQL_SET_PRAGMA)
+
+            val values = ContentValues().apply {
+                put(HistoryEntry.COLUMN_NAME_TYPE, item.type)
+                put(HistoryEntry.COLUMN_NAME_DATE, item.date)
+                put(HistoryEntry.COLUMN_NAME_AMOUNT, item.amount)
+                put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, item.paymentId)
+                put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, item.categoryId)
+                put(HistoryEntry.COLUMN_NAME_CONTENT, item.content)
+            }
+
+            insert(CategoryEntry.TABLE_NAME, null, values)
+        }
+    }
 }
