@@ -1,7 +1,9 @@
 package com.woowahantechcamp.account_book.data.repository
 
 import android.content.ContentValues
+import android.provider.BaseColumns
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
+import com.woowahantechcamp.account_book.data.entity.PaymentEntity
 import com.woowahantechcamp.account_book.util.query
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -29,13 +31,14 @@ class AccountBookDataSource @Inject constructor(
 
             with(cursor) {
                 while (moveToNext()) {
+                    val id = getInt(getColumnIndexOrThrow(BaseColumns._ID))
                     val type = getInt(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TYPE))
                     val title =
                         getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE))
                     val color =
                         getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
 
-                    items.add(CategoryEntity(type, title, color))
+                    items.add(CategoryEntity(id, type, title, color))
                 }
             }
             cursor.close()
@@ -55,4 +58,42 @@ class AccountBookDataSource @Inject constructor(
             insert(CategoryEntry.TABLE_NAME, null, values)
         }
     }
+
+    suspend fun getAllPaymentMethod(): List<PaymentEntity> = withContext(ioDispatcher) {
+        dbHelper.readableDatabase.run {
+            val projection = arrayOf(
+                PaymentEntry.COLUMN_NAME_TITLE
+            )
+
+            val cursor = query(
+                tableName = PaymentEntry.TABLE_NAME,
+                projection = projection
+            )
+
+            val items = mutableListOf<PaymentEntity>()
+
+            with(cursor) {
+                while (moveToNext()) {
+                    val id = getInt(getColumnIndexOrThrow(BaseColumns._ID))
+                    val title = getString(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE))
+
+                    items.add(PaymentEntity(id, title))
+                }
+            }
+            cursor.close()
+
+            items
+        }
+    }
+
+    suspend fun insertPaymentMethod(paymentEntity: PaymentEntity): Long =
+        withContext(ioDispatcher) {
+            dbHelper.writableDatabase.run {
+                val values = ContentValues().apply {
+                    put(PaymentEntry.COLUMN_NAME_TITLE, paymentEntity.title)
+                }
+
+                insert(PaymentEntry.TABLE_NAME, null, values)
+            }
+        }
 }
