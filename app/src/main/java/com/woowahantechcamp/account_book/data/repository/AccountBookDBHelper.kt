@@ -11,7 +11,7 @@ class AccountBookDBHelper(
 
     private val historyTableCreateSQL = with(HistoryEntry) {
         "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$COLUMN_NAME_TYPE INTEGER NOT NULL, " +
                 "$COLUMN_NAME_DATE DATE NOT NULL, " +
                 "$COLUMN_NAME_AMOUNT INTEGER NOT NULL, " +
@@ -26,19 +26,20 @@ class AccountBookDBHelper(
 
     private val paymentTableCreateSQL = with(PaymentEntry) {
         "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$COLUMN_NAME_TITLE TEXT NOT NULL)"
     }
 
     private val categoryTableCreateSQL = with(CategoryEntry) {
         "CREATE TABLE $TABLE_NAME (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY, " +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$COLUMN_NAME_TYPE INTEGER NOT NULL, " +
                 "$COLUMN_NAME_TITLE TEXT NOT NULL, " +
                 "$COLUMN_NAME_COLOR TEXT NOT NULL)"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("PRAGMA foreign_keys = ON")
         db.execSQL(paymentTableCreateSQL)
         db.execSQL(categoryTableCreateSQL)
         db.execSQL(historyTableCreateSQL)
