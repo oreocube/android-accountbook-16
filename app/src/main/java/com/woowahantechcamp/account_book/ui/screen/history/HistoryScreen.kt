@@ -127,18 +127,21 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
-        Row(modifier = Modifier.padding(vertical = 8.dp)) {
-            Text(
-                text = item.title,
-                modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = Purple
-            )
+        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            if (item.content != null) {
+                Text(
+                    text = item.content,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Purple
+                )
+            }
             Text(
                 text = if (item.type == Type.INCOME) "${item.amount}원" else "-${item.amount}원",
                 fontWeight = FontWeight.Bold,
-                color = if (item.type == Type.INCOME) Blue4 else Red
+                color = if (item.type == Type.INCOME) Blue4 else Red,
+                modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
 
