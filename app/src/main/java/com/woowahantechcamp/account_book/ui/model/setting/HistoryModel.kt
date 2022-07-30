@@ -1,8 +1,8 @@
 package com.woowahantechcamp.account_book.ui.model.setting
 
-enum class Type {
-    INCOME,
-    EXPENSES
+enum class Type(val title: String) {
+    INCOME("수입"),
+    EXPENSES("지출")
 }
 
 data class HistoryModel(

@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,15 +20,20 @@ import androidx.core.graphics.toColorInt
 import com.woowahantechcamp.account_book.R
 import com.woowahantechcamp.account_book.data.repository.HistoryRepository
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
+import com.woowahantechcamp.account_book.ui.component.FilterButton
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
 import com.woowahantechcamp.account_book.ui.model.setting.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.setting.Type
 import com.woowahantechcamp.account_book.ui.theme.*
+import com.woowahantechcamp.account_book.util.toCurrency
 
 @Composable
 fun HistoryScreen(year: Int, month: Int) {
     val repository = HistoryRepository()
     val grouped = repository.getAll()
+
+    val incomeChecked = rememberSaveable { mutableStateOf(true) }
+    val expenseChecked = rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -40,7 +47,8 @@ fun HistoryScreen(year: Int, month: Int) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { /*TODO*/ },
-                backgroundColor = Yellow) {
+                backgroundColor = Yellow
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_plus),
                     contentDescription = "addIcon",
@@ -49,28 +57,42 @@ fun HistoryScreen(year: Int, month: Int) {
             }
         }
     ) {
-        LazyColumn {
-            grouped.forEach { (date, list) ->
-                val sumOfIncome = list.filter { it.type == Type.INCOME }.sumOf { it.amount }
-                val sumOfExpenses = list.filter { it.type == Type.EXPENSES }.sumOf { it.amount }
-                item {
-                    HistoryItemHeader(date, sumOfIncome, sumOfExpenses)
-                }
+        Column {
+            FilterButton(
+                incomeChecked = incomeChecked,
+                expenseChecked = expenseChecked,
+                modifier = Modifier.padding(16.dp)
+            )
+            HistoryList(grouped = grouped)
+        }
+    }
+}
 
-                items(list) { item ->
-                    Divider(
-                        color = Purple40,
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    HistoryItem(item = item, onHistoryItemClick = {})
-                }
-                item {
-                    Divider(
-                        color = MaterialTheme.colors.primary,
-                        thickness = 1.dp
-                    )
-                }
+@Composable
+fun HistoryList(
+    grouped: Map<String, List<HistoryModel>>
+) {
+    LazyColumn {
+        grouped.forEach { (date, list) ->
+            val sumOfIncome = list.filter { it.type == Type.INCOME }.sumOf { it.amount }
+            val sumOfExpenses = list.filter { it.type == Type.EXPENSES }.sumOf { it.amount }
+            item {
+                HistoryItemHeader(date, sumOfIncome, sumOfExpenses)
+            }
+
+            items(list) { item ->
+                Divider(
+                    color = Purple40,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                HistoryItem(item = item, onHistoryItemClick = {})
+            }
+            item {
+                Divider(
+                    color = MaterialTheme.colors.primary,
+                    thickness = 1.dp
+                )
             }
         }
     }
@@ -89,7 +111,7 @@ fun HistoryItemHeader(date: String, sumOfIncome: Int, sumOfExpenses: Int) {
         )
         if (sumOfIncome > 0) {
             Text(
-                text = "수입 $sumOfIncome",
+                text = "수입 ${sumOfIncome.toCurrency()}",
                 fontSize = 12.sp,
                 color = LightPurple,
                 modifier = Modifier.align(Alignment.Bottom)
@@ -97,7 +119,7 @@ fun HistoryItemHeader(date: String, sumOfIncome: Int, sumOfExpenses: Int) {
         }
         if (sumOfExpenses > 0) {
             Text(
-                text = " 지출 $sumOfExpenses",
+                text = " 지출 ${sumOfExpenses.toCurrency()}",
                 fontSize = 12.sp,
                 color = LightPurple,
                 modifier = Modifier.align(Alignment.Bottom)
@@ -127,7 +149,11 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
-        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
             if (item.content != null) {
                 Text(
                     text = item.content,
@@ -138,7 +164,7 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 )
             }
             Text(
-                text = if (item.type == Type.INCOME) "${item.amount}원" else "-${item.amount}원",
+                text = if (item.type == Type.INCOME) "${item.amount.toCurrency()}원" else "-${item.amount}원",
                 fontWeight = FontWeight.Bold,
                 color = if (item.type == Type.INCOME) Blue4 else Red,
                 modifier = Modifier.align(Alignment.CenterEnd)
