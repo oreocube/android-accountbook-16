@@ -11,26 +11,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.woowahantechcamp.account_book.data.repository.AccountBookDBHelper
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigation
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookScreen
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingScreen
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var dbHelper: AccountBookDBHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AccountBookApp()
         }
+    }
+
+    override fun onDestroy() {
+        dbHelper.close()
+        super.onDestroy()
     }
 }
 
@@ -68,7 +79,7 @@ fun AccountBookApp() {
                     Text(AccountBookScreen.Graph.route)
                 }
                 composable(route = AccountBookScreen.Setting.route) {
-                    SettingScreen()
+                    SettingScreen(hiltViewModel())
                 }
             }
         }
