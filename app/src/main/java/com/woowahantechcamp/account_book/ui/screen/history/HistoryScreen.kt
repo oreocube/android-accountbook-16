@@ -59,8 +59,12 @@ fun HistoryScreen(year: Int, month: Int) {
     ) {
         Column {
             FilterButton(
-                incomeChecked = incomeChecked,
-                expenseChecked = expenseChecked,
+                incomeChecked = incomeChecked.value,
+                expenseChecked = expenseChecked.value,
+                onChanged = {
+                    if (it == Type.INCOME) incomeChecked.value = !incomeChecked.value
+                    else expenseChecked.value = !expenseChecked.value
+                },
                 modifier = Modifier.padding(16.dp)
             )
             HistoryList(grouped = grouped)

@@ -10,7 +10,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,8 +25,9 @@ import com.woowahantechcamp.account_book.util.toCurrency
 
 @Composable
 fun FilterButton(
-    incomeChecked: MutableState<Boolean>,
-    expenseChecked: MutableState<Boolean>,
+    incomeChecked: Boolean,
+    expenseChecked: Boolean,
+    onChanged: (Type) -> Unit,
     modifier: Modifier
 ) {
     Surface(
@@ -46,10 +46,7 @@ fun FilterButton(
                     selected = if (it == Type.INCOME) incomeChecked else expenseChecked,
                     modifier = Modifier
                         .weight(1f)
-                        .clickable {
-                            if (it == Type.INCOME) incomeChecked.value = !incomeChecked.value
-                            else expenseChecked.value = !expenseChecked.value
-                        })
+                        .clickable { onChanged(it) })
             }
         }
     }
@@ -59,13 +56,13 @@ fun FilterButton(
 fun FilterItem(
     type: Type,
     amount: Int,
-    selected: MutableState<Boolean>,
+    selected: Boolean,
     modifier: Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = if (selected.value) MaterialTheme.colors.primary else LightPurple)
+            .background(color = if (selected) MaterialTheme.colors.primary else LightPurple)
             .padding(8.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -75,9 +72,9 @@ fun FilterItem(
                 .size(12.dp)
                 .clip(RoundedCornerShape(2.dp)),
             border = BorderStroke(1.dp, White),
-            color = if (selected.value) White else Color.Transparent
+            color = if (selected) White else Color.Transparent
         ) {
-            if (selected.value) {
+            if (selected) {
                 Image(
                     painter = painterResource(R.drawable.ic_check),
                     contentDescription = type.title,
