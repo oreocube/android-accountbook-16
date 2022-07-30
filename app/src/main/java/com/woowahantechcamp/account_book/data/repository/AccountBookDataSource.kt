@@ -20,6 +20,7 @@ class AccountBookDataSource @Inject constructor(
     suspend fun getAllCategory(): List<CategoryEntity> = withContext(ioDispatcher) {
         dbHelper.readableDatabase.run {
             val projection = arrayOf(
+                BaseColumns._ID,
                 CategoryEntry.COLUMN_NAME_TYPE,
                 CategoryEntry.COLUMN_NAME_TITLE,
                 CategoryEntry.COLUMN_NAME_COLOR
