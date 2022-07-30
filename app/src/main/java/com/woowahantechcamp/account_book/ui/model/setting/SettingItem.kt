@@ -11,6 +11,7 @@ sealed class SettingItem(
 
     data class CategoryItem(
         override val title: String,
+        val type: Type,
         val color: Color
     ) : SettingItem(title)
 }
