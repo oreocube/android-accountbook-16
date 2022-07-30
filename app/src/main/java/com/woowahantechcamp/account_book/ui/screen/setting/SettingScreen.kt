@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,25 +28,16 @@ import com.woowahantechcamp.account_book.ui.theme.Purple
 import com.woowahantechcamp.account_book.ui.theme.Purple40
 
 @Composable
-fun SettingScreen() {
+fun SettingScreen(viewModel: SettingViewModel) {
     val payments = "결제수단" to listOf(
         TextItem("현대카드"),
         TextItem("카카오뱅크 체크카드")
     )
-    val expenses = "지출 카테고리" to listOf(
-        CategoryItem("교통", Purple),
-        CategoryItem("문화/여가", Purple),
-        CategoryItem("미분류", Purple),
-        CategoryItem("생활", Purple),
-        CategoryItem("쇼핑/뷰티", Purple),
-        CategoryItem("식비", Purple),
-        CategoryItem("의료/건강", Purple)
-    )
-    val incomes = "수입 카테고리" to listOf(
-        CategoryItem("월급", Purple),
-        CategoryItem("용돈", Purple),
-        CategoryItem("기타", Purple)
-    )
+    val incomeCategory: List<CategoryItem> by viewModel.incomeCategory.observeAsState(listOf())
+    val expensesCategory: List<CategoryItem> by viewModel.expenseCategory.observeAsState(listOf())
+
+    val incomes = "수입 카테고리" to incomeCategory
+    val expenses = "지출 카테고리" to expensesCategory
 
     Scaffold(
         topBar = {
@@ -186,13 +179,5 @@ fun SettingList(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun SettingPreview() {
-    AccountbookTheme {
-        SettingScreen()
     }
 }
