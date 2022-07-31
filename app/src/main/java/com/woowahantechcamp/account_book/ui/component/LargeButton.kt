@@ -2,6 +2,7 @@ package com.woowahantechcamp.account_book.ui.component
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -15,12 +16,15 @@ import com.woowahantechcamp.account_book.ui.theme.Yellow
 
 @Composable
 fun LargeButton(
+    modifier: Modifier = Modifier,
     enabled: Boolean,
     title: String,
     onClick: () -> Unit
 ) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 40.dp),
         contentPadding = PaddingValues(16.dp),
         onClick = { onClick() },
         shape = RoundedCornerShape(14.dp),
