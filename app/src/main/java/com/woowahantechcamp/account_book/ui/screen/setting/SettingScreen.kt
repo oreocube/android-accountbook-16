@@ -23,10 +23,15 @@ import com.woowahantechcamp.account_book.ui.component.DividerPurple40
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.CategoryItem
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.TextItem
+import com.woowahantechcamp.account_book.ui.model.setting.Type
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
 
 @Composable
-fun SettingScreen(viewModel: SettingViewModel) {
+fun SettingScreen(
+    viewModel: SettingViewModel,
+    onItemClicked: (SettingType, Int) -> Unit,
+    onAddClick: (SettingType) -> Unit
+) {
     val payments = SettingType.PAYMENT to listOf(
         TextItem(1, "현대카드"),
         TextItem(2, "카카오뱅크 체크카드")
@@ -57,8 +62,23 @@ fun SettingScreen(viewModel: SettingViewModel) {
         DividerPrimary()
         SettingList(
             grouped = mapOf(payments, expenses, incomes),
-            onItemClick = {},
-            onAddClick = {}
+            onItemClick = {
+                when (it) {
+                    is TextItem -> {
+                        onItemClicked(SettingType.PAYMENT, it.id)
+                    }
+                    is CategoryItem -> {
+                        if (it.type == Type.INCOME) {
+                            onItemClicked(SettingType.INCOME, it.id)
+                        } else {
+                            onItemClicked(SettingType.EXPENSE, it.id)
+                        }
+                    }
+                }
+            },
+            onAddClick = {
+                onAddClick(it)
+            }
         )
     }
 }

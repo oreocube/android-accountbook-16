@@ -15,11 +15,10 @@
         android:theme="@style/Theme.Accountbook"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Accountbook"
-            android:windowSoftInputMode="adjustResize">
+            android:theme="@style/Theme.Accountbook">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
