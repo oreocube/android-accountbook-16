@@ -2,6 +2,7 @@ package com.woowahantechcamp.account_book.ui.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -13,5 +14,13 @@ fun DividerPurple40() {
         thickness = 1.dp,
         color = Purple40,
         modifier = Modifier.padding(horizontal = 16.dp)
+    )
+}
+
+@Composable
+fun DividerPrimary() {
+    Divider(
+        color = MaterialTheme.colors.primary,
+        thickness = 1.dp
     )
 }
