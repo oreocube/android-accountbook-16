@@ -6,11 +6,14 @@ enum class Type(val title: String) {
 }
 
 data class HistoryModel(
+    val id: Int,
     val date: String,
     val type: Type,
     val content: String?,
     val amount: Int,
+    val paymentId: Int,
     val payment: String,
+    val categoryId: Int,
     val category: String,
     val color: String
 )
