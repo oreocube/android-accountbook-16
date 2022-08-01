@@ -4,9 +4,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColorInt
-import com.woowahantechcamp.account_book.ui.model.setting.HistoryModel
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.CategoryModel
+import com.woowahantechcamp.account_book.ui.model.HistoryModel
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.util.Result
 import java.time.YearMonth
 import javax.inject.Inject
@@ -24,12 +24,12 @@ class AccountBookRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllCategories(): Result<List<SettingItem.CategoryItem>> {
+    suspend fun getAllCategories(): Result<List<CategoryModel>> {
         return try {
             val result = dataSource.getAllCategory()
 
             Result.Success(data = result.map {
-                SettingItem.CategoryItem(
+                CategoryModel(
                     id = it.categoryId,
                     type = if (it.type == 1) Type.INCOME else Type.EXPENSES,
                     title = it.title,
@@ -55,7 +55,7 @@ class AccountBookRepository @Inject constructor(
                     id = it.id,
                     date = it.date,
                     type = if (it.type == 1) Type.INCOME else Type.EXPENSES,
-                    content = it.content,
+                    title = it.content ?: "",
                     amount = it.amount,
                     paymentId = it.paymentId,
                     payment = it.paymentTitle,

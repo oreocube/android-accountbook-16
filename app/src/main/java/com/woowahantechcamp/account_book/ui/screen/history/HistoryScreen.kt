@@ -24,8 +24,8 @@ import com.woowahantechcamp.account_book.R
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
 import com.woowahantechcamp.account_book.ui.component.FilterButton
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
-import com.woowahantechcamp.account_book.ui.model.setting.HistoryModel
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.HistoryModel
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.theme.*
 import com.woowahantechcamp.account_book.util.now
 import com.woowahantechcamp.account_book.util.toCurrency
@@ -195,9 +195,9 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-            if (item.content != null) {
+            if (item.title.isNotEmpty()) {
                 Text(
-                    text = item.content,
+                    text = item.title,
                     modifier = Modifier.align(Alignment.CenterStart),
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,

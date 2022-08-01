@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woowahantechcamp.account_book.data.repository.AccountBookRepository
-import com.woowahantechcamp.account_book.ui.model.setting.HistoryModel
+import com.woowahantechcamp.account_book.ui.model.HistoryModel
 import com.woowahantechcamp.account_book.util.Result
 import com.woowahantechcamp.account_book.util.now
 import dagger.hilt.android.lifecycle.HiltViewModel

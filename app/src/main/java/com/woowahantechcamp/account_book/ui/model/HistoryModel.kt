@@ -1,4 +1,4 @@
-package com.woowahantechcamp.account_book.ui.model.setting
+package com.woowahantechcamp.account_book.ui.model
 
 enum class Type(val title: String) {
     INCOME("수입"),
@@ -6,14 +6,14 @@ enum class Type(val title: String) {
 }
 
 data class HistoryModel(
-    val id: Int,
+    override val id: Int,
+    override val title: String,
     val date: String,
     val type: Type,
-    val content: String?,
     val amount: Int,
     val paymentId: Int,
     val payment: String,
     val categoryId: Int,
     val category: String,
     val color: String
-)
+) : Model

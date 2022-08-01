@@ -11,7 +11,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,15 +19,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
 import com.woowahantechcamp.account_book.ui.theme.White
 
 @Composable
 fun SwitchButton(
-    currentType: MutableState<Type>,
-    modifier: Modifier
+    currentType: Type,
+    modifier: Modifier,
+    onClick: (Type) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(10.dp),
@@ -42,8 +42,8 @@ fun SwitchButton(
             Type.values().forEach { type ->
                 SwitchButtonItem(
                     type = type,
-                    selected = type == currentType.value,
-                    onClick = { currentType.value = it },
+                    selected = type == currentType,
+                    onClick = { onClick(type) },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -80,6 +80,11 @@ fun SwitchButtonItem(
 fun PreviewSwitchButton() {
     AccountbookTheme {
         val currentType = remember { mutableStateOf(Type.INCOME) }
-        SwitchButton(currentType = currentType, modifier = Modifier)
+        SwitchButton(
+            currentType = currentType.value,
+            modifier = Modifier,
+            onClick = {
+                currentType.value = it
+            })
     }
 }
