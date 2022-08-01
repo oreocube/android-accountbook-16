@@ -40,7 +40,7 @@ class AccountBookDataSource @Inject constructor(
                     val title =
                         getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE))
                     val color =
-                        getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                        getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
 
                     items.add(CategoryEntity(id, type, title, color))
                 }
@@ -51,7 +51,7 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun insertCategory(type: Int, title: String, color: String): Long =
+    suspend fun insertCategory(type: Int, title: String, color: Long): Long =
         withContext(ioDispatcher) {
             dbHelper.writableDatabase.run {
                 val values = ContentValues().apply {
@@ -67,7 +67,7 @@ class AccountBookDataSource @Inject constructor(
     suspend fun updateCategory(
         categoryId: Int,
         title: String?,
-        color: String?
+        color: Long?
     ): Int = withContext(ioDispatcher) {
         dbHelper.writableDatabase.run {
             val values = ContentValues().apply {
@@ -105,6 +105,7 @@ class AccountBookDataSource @Inject constructor(
     suspend fun getAllPaymentMethod(): List<PaymentEntity> = withContext(ioDispatcher) {
         dbHelper.readableDatabase.run {
             val projection = arrayOf(
+                BaseColumns._ID,
                 PaymentEntry.COLUMN_NAME_TITLE
             )
 
@@ -129,11 +130,11 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun insertPaymentMethod(paymentEntity: PaymentEntity): Long =
+    suspend fun insertPaymentMethod(title: String): Long =
         withContext(ioDispatcher) {
             dbHelper.writableDatabase.run {
                 val values = ContentValues().apply {
-                    put(PaymentEntry.COLUMN_NAME_TITLE, paymentEntity.title)
+                    put(PaymentEntry.COLUMN_NAME_TITLE, title)
                 }
 
                 insert(PaymentEntry.TABLE_NAME, null, values)
@@ -195,7 +196,7 @@ class AccountBookDataSource @Inject constructor(
                                 paymentTitle = getString(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
                                 categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
                                 categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
-                                color = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                                color = getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
                             )
                         )
                     }
