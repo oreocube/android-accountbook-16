@@ -20,10 +20,10 @@ import com.woowahantechcamp.account_book.R
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
 import com.woowahantechcamp.account_book.ui.component.DividerPrimary
 import com.woowahantechcamp.account_book.ui.component.DividerPurple40
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.CategoryItem
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.TextItem
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.CategoryModel
+import com.woowahantechcamp.account_book.ui.model.Model
+import com.woowahantechcamp.account_book.ui.model.PaymentModel
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
 
 @Composable
@@ -33,11 +33,11 @@ fun SettingScreen(
     onAddClick: (SettingType) -> Unit
 ) {
     val payments = SettingType.PAYMENT to listOf(
-        TextItem(1, "현대카드"),
-        TextItem(2, "카카오뱅크 체크카드")
+        PaymentModel(1, "현대카드"),
+        PaymentModel(2, "카카오뱅크 체크카드")
     )
-    val incomeCategory: List<CategoryItem> by viewModel.incomeCategory.observeAsState(listOf())
-    val expensesCategory: List<CategoryItem> by viewModel.expenseCategory.observeAsState(listOf())
+    val incomeCategory: List<CategoryModel> by viewModel.incomeCategory.observeAsState(listOf())
+    val expensesCategory: List<CategoryModel> by viewModel.expenseCategory.observeAsState(listOf())
 
     val incomes = SettingType.INCOME to incomeCategory
     val expenses = SettingType.EXPENSE to expensesCategory
@@ -64,10 +64,10 @@ fun SettingScreen(
             grouped = mapOf(payments, expenses, incomes),
             onItemClick = {
                 when (it) {
-                    is TextItem -> {
+                    is PaymentModel -> {
                         onItemClicked(SettingType.PAYMENT, it.id)
                     }
-                    is CategoryItem -> {
+                    is CategoryModel -> {
                         if (it.type == Type.INCOME) {
                             onItemClicked(SettingType.INCOME, it.id)
                         } else {
@@ -85,8 +85,8 @@ fun SettingScreen(
 
 @Composable
 fun SettingList(
-    grouped: Map<SettingType, List<SettingItem>>,
-    onItemClick: (SettingItem) -> Unit,
+    grouped: Map<SettingType, List<Model>>,
+    onItemClick: (Model) -> Unit,
     onAddClick: (SettingType) -> Unit
 ) {
     LazyColumn {
@@ -126,8 +126,8 @@ fun Header(title: String) {
 
 @Composable
 fun Body(
-    item: SettingItem,
-    onItemClick: (SettingItem) -> Unit
+    item: Model,
+    onItemClick: (Model) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -150,7 +150,7 @@ fun Body(
                     .weight(1f)
 
             )
-            if (item is CategoryItem) {
+            if (item is CategoryModel) {
                 CategoryTag(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     title = item.title,

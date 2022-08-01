@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.R
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
 import com.woowahantechcamp.account_book.ui.theme.White
 import com.woowahantechcamp.account_book.util.toCurrency

@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woowahantechcamp.account_book.data.repository.AccountBookRepository
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
-import com.woowahantechcamp.account_book.ui.model.setting.Type
+import com.woowahantechcamp.account_book.ui.model.CategoryModel
+import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,11 +17,11 @@ class SettingViewModel @Inject constructor(
     private val categoryRepository: AccountBookRepository
 ) : ViewModel() {
 
-    private val _incomeCategory = MutableLiveData<List<SettingItem.CategoryItem>>()
-    val incomeCategory: LiveData<List<SettingItem.CategoryItem>> = _incomeCategory
+    private val _incomeCategory = MutableLiveData<List<CategoryModel>>()
+    val incomeCategory: LiveData<List<CategoryModel>> = _incomeCategory
 
-    private val _expenseCategory = MutableLiveData<List<SettingItem.CategoryItem>>()
-    val expenseCategory: LiveData<List<SettingItem.CategoryItem>> = _expenseCategory
+    private val _expenseCategory = MutableLiveData<List<CategoryModel>>()
+    val expenseCategory: LiveData<List<CategoryModel>> = _expenseCategory
 
     init {
         getAllCategoryItem()
