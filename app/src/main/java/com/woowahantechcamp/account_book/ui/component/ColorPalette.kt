@@ -23,7 +23,7 @@ import com.woowahantechcamp.account_book.util.expenseColorList
 fun ColorPalette(
     modifier: Modifier,
     selectedIndex: Int,
-    colorList: List<Color>,
+    colorList: List<Long>,
     onSelectChanged: (Int) -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -47,7 +47,7 @@ fun ColorPalette(
                             modifier = Modifier
                                 .size(if (index == selectedIndex) 24.dp else 16.dp)
                                 .align(Alignment.Center)
-                                .background(color = color)
+                                .background(color = Color(color))
                                 .clickable { onSelectChanged(index) }) {
                         }
                     }

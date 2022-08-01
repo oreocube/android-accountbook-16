@@ -181,7 +181,7 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
             CategoryTag(
                 modifier = Modifier.align(Alignment.CenterStart),
                 title = item.category,
-                color = Color(item.color.toColorInt())
+                color = item.color
             )
             Text(
                 text = item.payment,

@@ -29,7 +29,7 @@ const val SQL_CREATE_CATEGORY_TABLE =
             "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "${CategoryEntry.COLUMN_NAME_TYPE} INTEGER NOT NULL, " +
             "${CategoryEntry.COLUMN_NAME_TITLE} TEXT NOT NULL, " +
-            "${CategoryEntry.COLUMN_NAME_COLOR} TEXT NOT NULL)"
+            "${CategoryEntry.COLUMN_NAME_COLOR} INTEGER NOT NULL)"
 
 const val SQL_SET_PRAGMA = "PRAGMA foreign_keys = ON"
 
