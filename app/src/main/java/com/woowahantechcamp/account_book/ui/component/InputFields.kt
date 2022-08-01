@@ -1,26 +1,39 @@
 package com.woowahantechcamp.account_book.ui.component
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.os.Build
+import android.widget.CalendarView
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import com.woowahantechcamp.account_book.R
+import com.woowahantechcamp.account_book.ui.model.Model
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
+import com.woowahantechcamp.account_book.ui.theme.Purple
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Composable
 fun InputField(
@@ -94,31 +107,108 @@ fun AmountTextInputField(
     }
 }
 
-@Preview
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Previewwww() {
-    AccountbookTheme {
-        val text = rememberSaveable { mutableStateOf("")}
-        val content = rememberSaveable { mutableStateOf("")}
-        val amount = rememberSaveable { mutableStateOf(0) }
+fun DateInputField(
+    date: LocalDate,
+    modifier: Modifier
+) {
+    val formatter = DateTimeFormatter.ofPattern("yyyy. M. d E요일", Locale.KOREA)
 
-        Column {
-            InputField(title = "결제수단") {
-                PlainTextInputField(text.value) {
-                    text.value = it
+    Text(
+        text = date.format(formatter),
+        color = MaterialTheme.colors.primary,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun CalendarDialog(
+    onDateChanged: (LocalDate) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colors.background
+        ) {
+            AndroidView({
+                CalendarView(it).apply {
+                    setOnDateChangeListener { _, year, month, dayOfMonth ->
+                        onDateChanged(LocalDate.of(year, month + 1, dayOfMonth))
+                        onDismissRequest()
+                    }
                 }
-            }
-            InputField(title = "내용") {
-                PlainTextInputField(content.value) {
-                    content.value = it
-                }
-            }
-            InputField(title = "금액") {
-                AmountTextInputField(amount.value) {
-                    amount.value = it
-                }
+            })
+        }
+    }
+}
+
+@Composable
+fun SelectionField(
+    displayText: String,
+    list: List<Model>,
+    onItemSelected: (Model) -> Unit,
+    onAddSelected: () -> Unit
+) {
+    val expended = rememberSaveable { mutableStateOf(false) }
+
+    Text(
+        text = displayText.ifEmpty { "선택하세요" },
+        color = if (displayText.isEmpty()) LightPurple else Purple,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.clickable { expended.value = true }
+    )
+
+    DropdownMenu(
+        expanded = expended.value,
+        modifier = Modifier
+            .background(color = Color.Transparent)
+            .border(
+                1.dp,
+                color = MaterialTheme.colors.primary,
+                shape = RoundedCornerShape(12.dp)
+            ),
+        onDismissRequest = { expended.value = false }
+    ) {
+        list.forEach {
+            DropdownMenuItem(
+                onClick = {
+                    onItemSelected(it)
+                    expended.value = false
+                },
+                modifier = Modifier.background(color = Color.Transparent)
+            ) {
+                Text(text = it.title, fontSize = 12.sp, color = Purple)
             }
         }
-
+        DropdownMenuItem(
+            onClick = {
+                onAddSelected()
+                expended.value = false
+            },
+            modifier = Modifier.background(color = Color.Transparent)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "추가하기",
+                    fontSize = 12.sp,
+                    color = Purple,
+                    modifier = Modifier.weight(1f)
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_plus),
+                    contentDescription = "plus",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                )
+            }
+        }
     }
 }
