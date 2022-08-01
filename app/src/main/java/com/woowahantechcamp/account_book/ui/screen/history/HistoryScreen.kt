@@ -1,11 +1,15 @@
 package com.woowahantechcamp.account_book.ui.screen.history
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -13,35 +17,66 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.woowahantechcamp.account_book.R
-import com.woowahantechcamp.account_book.data.repository.HistoryRepository
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
 import com.woowahantechcamp.account_book.ui.component.FilterButton
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
 import com.woowahantechcamp.account_book.ui.model.setting.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.setting.Type
 import com.woowahantechcamp.account_book.ui.theme.*
+import com.woowahantechcamp.account_book.util.now
 import com.woowahantechcamp.account_book.util.toCurrency
+import com.woowahantechcamp.account_book.util.toDate
+import com.woowahantechcamp.account_book.util.toFormattedDateString
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HistoryScreen(year: Int, month: Int) {
-    val repository = HistoryRepository()
-    val grouped = repository.getAll()
+fun HistoryScreen(
+    viewModel: HistoryViewModel
+) {
+    val year = rememberSaveable { mutableStateOf(now.year) }
+    val month = rememberSaveable { mutableStateOf(now.monthValue) }
 
     val incomeChecked = rememberSaveable { mutableStateOf(true) }
     val expenseChecked = rememberSaveable { mutableStateOf(false) }
 
+    val list: List<HistoryModel> by viewModel.historyAll.observeAsState(listOf())
+
+    val filteredList = if (incomeChecked.value && expenseChecked.value) list
+    else if (incomeChecked.value) list.filter { it.type == Type.INCOME }
+    else if (expenseChecked.value) list.filter { it.type == Type.EXPENSES }
+    else listOf()
+
+    val grouped: Map<String, List<HistoryModel>> = filteredList.groupBy { it.date }
+
     Scaffold(
         topBar = {
             TopAppBarWithMonth(
-                year = year,
-                month = month,
-                onPrevMonthClick = {},
-                onNextMonthClick = {}
+                year = year.value,
+                month = month.value,
+                onPrevMonthClick = {
+                    if (month.value == 1) {
+                        year.value--
+                        month.value = 12
+                    } else {
+                        month.value--
+                    }
+
+                    viewModel.fetchData(year.value, month.value)
+                },
+                onNextMonthClick = {
+                    if (month.value == 12){
+                        year.value++
+                        month.value = 1
+                    } else {
+                        month.value++
+                    }
+
+                    viewModel.fetchData(year.value, month.value)
+                }
             )
         },
         floatingActionButton = {
@@ -72,6 +107,7 @@ fun HistoryScreen(year: Int, month: Int) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryList(
     grouped: Map<String, List<HistoryModel>>
@@ -102,11 +138,12 @@ fun HistoryList(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryItemHeader(date: String, sumOfIncome: Int, sumOfExpenses: Int) {
     Row(modifier = Modifier.padding(16.dp, 8.dp)) {
         Text(
-            text = date,
+            text = date.toDate().toFormattedDateString(),
             fontSize = 16.sp,
             color = LightPurple,
             modifier = Modifier
@@ -175,13 +212,5 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
             )
         }
 
-    }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    AccountbookTheme {
-        HistoryScreen(year = 2022, month = 7)
     }
 }

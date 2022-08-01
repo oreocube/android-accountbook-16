@@ -1,5 +1,7 @@
 package com.woowahantechcamp.account_book.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -23,6 +25,7 @@ import com.woowahantechcamp.account_book.ui.screen.setting.SettingScreen
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingViewModel
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountBookApp() {
     AccountbookTheme {
@@ -48,7 +51,7 @@ fun AccountBookApp() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = AccountBookScreen.History.route) {
-                    HistoryScreen(year = 2022, month = 7)
+                    HistoryScreen(hiltViewModel())
                 }
                 composable(route = AccountBookScreen.Calendar.route) {
                     Text(AccountBookScreen.Calendar.route)
