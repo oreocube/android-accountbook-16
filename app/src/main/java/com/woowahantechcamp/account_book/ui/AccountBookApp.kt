@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
+import com.woowahantechcamp.account_book.ui.screen.history.HistoryViewModel
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigation
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookScreen
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingDetail
@@ -27,7 +28,10 @@ import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AccountBookApp() {
+fun AccountBookApp(
+    historyViewModel: HistoryViewModel = hiltViewModel(),
+    settingViewModel: SettingViewModel = hiltViewModel()
+) {
     AccountbookTheme {
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
@@ -51,7 +55,7 @@ fun AccountBookApp() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = AccountBookScreen.History.route) {
-                    HistoryScreen(hiltViewModel())
+                    HistoryScreen(historyViewModel)
                 }
                 composable(route = AccountBookScreen.Calendar.route) {
                     Text(AccountBookScreen.Calendar.route)
@@ -61,7 +65,7 @@ fun AccountBookApp() {
                 }
                 composable(route = AccountBookScreen.Setting.route) {
                     SettingScreen(
-                        hiltViewModel<SettingViewModel>(),
+                        viewModel = settingViewModel,
                         onItemClicked = { type, id ->
                             navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/$type/$id")
                         },
@@ -80,9 +84,14 @@ fun AccountBookApp() {
                     val type = backStackEntry.arguments?.get("type") as SettingType
                     val id = backStackEntry.arguments?.get("id") as Int // 아이템 조회시 필요 TODO
 
-                    SettingDetail(title = type.addTitle, type = type) {
-                        navController.navigateUp()
-                    }
+                    SettingDetail(
+                        viewModel = settingViewModel,
+                        title = type.addTitle,
+                        id = id,
+                        type = type,
+                        onUpPressed = { navController.navigateUp() },
+                        onSaved = { navController.navigateUp() }
+                    )
                 }
                 composable(
                     route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/{type}",
@@ -92,9 +101,13 @@ fun AccountBookApp() {
                 ) { backStackEntry ->
                     val type = backStackEntry.arguments?.get("type") as SettingType
 
-                    SettingDetail(title = type.addTitle, type = type) {
-                        navController.navigateUp()
-                    }
+                    SettingDetail(
+                        viewModel = settingViewModel,
+                        title = type.addTitle,
+                        type = type,
+                        onUpPressed = { navController.navigateUp() },
+                        onSaved = { navController.navigateUp() }
+                    )
                 }
             }
         }

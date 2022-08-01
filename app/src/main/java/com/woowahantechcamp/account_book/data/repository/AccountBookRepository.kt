@@ -3,10 +3,11 @@ package com.woowahantechcamp.account_book.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
-import androidx.core.graphics.toColorInt
 import com.woowahantechcamp.account_book.ui.model.CategoryModel
 import com.woowahantechcamp.account_book.ui.model.HistoryModel
+import com.woowahantechcamp.account_book.ui.model.PaymentModel
 import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.util.Result
 import java.time.YearMonth
 import javax.inject.Inject
@@ -14,9 +15,10 @@ import javax.inject.Inject
 class AccountBookRepository @Inject constructor(
     private val dataSource: AccountBookDataSource
 ) {
-    suspend fun addCategory(type: Int, title: String, color: String): Result<Long> {
+    suspend fun addCategory(type: SettingType, title: String, color: Long): Result<Long> {
         return try {
-            val result = dataSource.insertCategory(type, title, color)
+            val typeInt = if (type == SettingType.INCOME) 1 else 2
+            val result = dataSource.insertCategory(typeInt, title, color)
 
             Result.Success(result)
         } catch (e: Exception) {
@@ -33,9 +35,54 @@ class AccountBookRepository @Inject constructor(
                     id = it.categoryId,
                     type = if (it.type == 1) Type.INCOME else Type.EXPENSES,
                     title = it.title,
-                    color = Color(it.color.toColorInt())
+                    color = Color(it.color)
                 )
             })
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    suspend fun updateCategory(id: Int, title: String, color: Long): Result<Int> {
+        return try {
+            val result = dataSource.updateCategory(id, title, color)
+
+            Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    suspend fun addPayment(title: String): Result<Long> {
+        return try {
+            val result = dataSource.insertPaymentMethod(title)
+
+            Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    suspend fun getAllPayment(): Result<List<PaymentModel>> {
+        return try {
+            val result = dataSource.getAllPaymentMethod()
+
+            Result.Success(data = result.map {
+                PaymentModel(
+                    id = it.paymentId,
+                    title = it.title
+                )
+            })
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    suspend fun updatePayment(id: Int, title: String): Result<Int> {
+        return try {
+            val result = dataSource.updatePaymentMethod(id, title)
+
+            Result.Success(result)
         } catch (e: Exception) {
             Result.Error(e.message ?: "exception occur")
         }
@@ -61,7 +108,7 @@ class AccountBookRepository @Inject constructor(
                     payment = it.paymentTitle,
                     categoryId = it.categoryId,
                     category = it.categoryTitle,
-                    color = it.color
+                    color = Color(it.color)
                 )
             })
         } catch (e: Exception) {

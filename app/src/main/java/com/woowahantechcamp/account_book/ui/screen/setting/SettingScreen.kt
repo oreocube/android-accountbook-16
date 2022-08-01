@@ -32,13 +32,11 @@ fun SettingScreen(
     onItemClicked: (SettingType, Int) -> Unit,
     onAddClick: (SettingType) -> Unit
 ) {
-    val payments = SettingType.PAYMENT to listOf(
-        PaymentModel(1, "현대카드"),
-        PaymentModel(2, "카카오뱅크 체크카드")
-    )
+    val paymentMethod: List<PaymentModel> by viewModel.paymentMethod.observeAsState(listOf())
     val incomeCategory: List<CategoryModel> by viewModel.incomeCategory.observeAsState(listOf())
     val expensesCategory: List<CategoryModel> by viewModel.expenseCategory.observeAsState(listOf())
 
+    val payments = SettingType.PAYMENT to paymentMethod
     val incomes = SettingType.INCOME to incomeCategory
     val expenses = SettingType.EXPENSE to expensesCategory
 
