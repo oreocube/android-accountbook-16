@@ -26,6 +26,7 @@ class AccountBookRepository @Inject constructor(
 
             Result.Success(data = result.map {
                 SettingItem.CategoryItem(
+                    id = it.categoryId,
                     type = if (it.type == 1) Type.INCOME else Type.EXPENSES,
                     title = it.title,
                     color = Color(it.color.toColorInt())

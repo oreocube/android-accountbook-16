@@ -14,30 +14,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.R
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
+import com.woowahantechcamp.account_book.ui.component.DividerPrimary
+import com.woowahantechcamp.account_book.ui.component.DividerPurple40
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem
-import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.TextItem
 import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.CategoryItem
-import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
+import com.woowahantechcamp.account_book.ui.model.setting.SettingItem.TextItem
+import com.woowahantechcamp.account_book.ui.model.setting.Type
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
-import com.woowahantechcamp.account_book.ui.theme.Purple
-import com.woowahantechcamp.account_book.ui.theme.Purple40
 
 @Composable
-fun SettingScreen(viewModel: SettingViewModel) {
-    val payments = "결제수단" to listOf(
-        TextItem("현대카드"),
-        TextItem("카카오뱅크 체크카드")
+fun SettingScreen(
+    viewModel: SettingViewModel,
+    onItemClicked: (SettingType, Int) -> Unit,
+    onAddClick: (SettingType) -> Unit
+) {
+    val payments = SettingType.PAYMENT to listOf(
+        TextItem(1, "현대카드"),
+        TextItem(2, "카카오뱅크 체크카드")
     )
     val incomeCategory: List<CategoryItem> by viewModel.incomeCategory.observeAsState(listOf())
     val expensesCategory: List<CategoryItem> by viewModel.expenseCategory.observeAsState(listOf())
 
-    val incomes = "수입 카테고리" to incomeCategory
-    val expenses = "지출 카테고리" to expensesCategory
+    val incomes = SettingType.INCOME to incomeCategory
+    val expenses = SettingType.EXPENSE to expensesCategory
 
     Scaffold(
         topBar = {
@@ -56,15 +59,55 @@ fun SettingScreen(viewModel: SettingViewModel) {
             }
         }
     ) {
-        Divider(
-            color = MaterialTheme.colors.primary,
-            thickness = 1.dp
-        )
+        DividerPrimary()
         SettingList(
             grouped = mapOf(payments, expenses, incomes),
-            onItemClick = {},
-            onAddClick = {}
+            onItemClick = {
+                when (it) {
+                    is TextItem -> {
+                        onItemClicked(SettingType.PAYMENT, it.id)
+                    }
+                    is CategoryItem -> {
+                        if (it.type == Type.INCOME) {
+                            onItemClicked(SettingType.INCOME, it.id)
+                        } else {
+                            onItemClicked(SettingType.EXPENSE, it.id)
+                        }
+                    }
+                }
+            },
+            onAddClick = {
+                onAddClick(it)
+            }
         )
+    }
+}
+
+@Composable
+fun SettingList(
+    grouped: Map<SettingType, List<SettingItem>>,
+    onItemClick: (SettingItem) -> Unit,
+    onAddClick: (SettingType) -> Unit
+) {
+    LazyColumn {
+        grouped.forEach { (type, list) ->
+            item {
+                Header(title = type.plainTitle)
+            }
+            items(list) { item ->
+                Body(
+                    item = item,
+                    onItemClick = onItemClick
+                )
+            }
+            item {
+                Footer(
+                    type = type,
+                    onAddClick = onAddClick
+                )
+                DividerPrimary()
+            }
+        }
     }
 }
 
@@ -84,17 +127,14 @@ fun Header(title: String) {
 @Composable
 fun Body(
     item: SettingItem,
-    onItemClick: (String) -> Unit
+    onItemClick: (SettingItem) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onItemClick(item.title) }
+        .clickable { onItemClick(item) }
         .padding(horizontal = 16.dp)
     ) {
-        Divider(
-            color = Purple40,
-            thickness = 1.dp
-        )
+        DividerPurple40()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,17 +163,14 @@ fun Body(
 }
 
 @Composable
-fun Footer(title: String, onAddClick: () -> Unit) {
+fun Footer(type: SettingType, onAddClick: (SettingType) -> Unit) {
     Column(modifier = Modifier
-        .clickable { onAddClick() }
+        .clickable { onAddClick(type) }
         .padding(horizontal = 16.dp)) {
-        Divider(
-            color = Purple40,
-            thickness = 1.dp
-        )
+        DividerPurple40()
         Row(modifier = Modifier.padding(0.dp, 12.dp)) {
             Text(
-                text = "$title 추가하기",
+                text = type.addTitle,
                 color = MaterialTheme.colors.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
@@ -151,33 +188,3 @@ fun Footer(title: String, onAddClick: () -> Unit) {
     }
 }
 
-@Composable
-fun SettingList(
-    grouped: Map<String, List<SettingItem>>,
-    onItemClick: (String) -> Unit,
-    onAddClick: () -> Unit
-) {
-    LazyColumn {
-        grouped.forEach { (title, list) ->
-            item {
-                Header(title = title)
-            }
-            items(list) { item ->
-                Body(
-                    item = item,
-                    onItemClick = onItemClick
-                )
-            }
-            item {
-                Footer(
-                    title = title,
-                    onAddClick = onAddClick
-                )
-                Divider(
-                    color = Purple,
-                    thickness = 1.dp
-                )
-            }
-        }
-    }
-}

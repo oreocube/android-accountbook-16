@@ -10,17 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.woowahantechcamp.account_book.ui.component.*
-import com.woowahantechcamp.account_book.ui.model.setting.Type
-import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 import com.woowahantechcamp.account_book.util.expenseColorList
 import com.woowahantechcamp.account_book.util.incomeColorList
 
 @Composable
 fun SettingDetail(
     title: String,
-    type: Type?
+    type: SettingType?,
+    onUpPressed: () -> Unit
 ) {
     val text = rememberSaveable { mutableStateOf("") }
     val selectedColorIndex = rememberSaveable { mutableStateOf(0) }
@@ -28,7 +26,7 @@ fun SettingDetail(
     Scaffold(
         topBar = {
             TopAppBarWithUpButton(title = title) {
-                // TODO
+                onUpPressed()
             }
         }
     ) {
@@ -41,11 +39,11 @@ fun SettingDetail(
                 InputField(title = "이름") {
                     PlainTextInputField(text.value) { text.value = it }
                 }
-                if (type != null) {
+                if (type != SettingType.PAYMENT) {
                     ColorPalette(
                         modifier = Modifier,
                         selectedIndex = selectedColorIndex.value,
-                        colorList = if (type == Type.INCOME) incomeColorList
+                        colorList = if (type == SettingType.INCOME) incomeColorList
                         else expenseColorList
                     ) {
                         selectedColorIndex.value = it
@@ -60,16 +58,6 @@ fun SettingDetail(
             ) {
                 // TODO
             }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SettingDetailPreview() {
-    AccountbookTheme {
-        Scaffold {
-            SettingDetail(title = "수입 카테고리 추가", Type.INCOME)
         }
     }
 }
