@@ -30,7 +30,9 @@ fun ColorPalette(
         Header(title = "색상")
         DividerPurple40()
         LazyVerticalGrid(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             cells = GridCells.Fixed(10),
             verticalArrangement = Arrangement.Center
         ) {
