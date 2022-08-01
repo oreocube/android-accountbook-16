@@ -1,15 +1,13 @@
 package com.woowahantechcamp.account_book.ui.screen.setting
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.util.expenseColorList
 import com.woowahantechcamp.account_book.util.incomeColorList
@@ -49,7 +47,7 @@ fun SettingDetail(
                         selectedColorIndex.value = it
                     }
                 }
-                DividerPrimary()
+                if (type != SettingType.PAYMENT) DividerPrimary()
             }
             LargeButton(
                 modifier = Modifier.align(Alignment.BottomCenter),
