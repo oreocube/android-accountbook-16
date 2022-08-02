@@ -17,3 +17,12 @@ val dateToStringFormatter = SimpleDateFormat("M월 d일 E", Locale.KOREA)
 fun String.toDate(): Date = stringToDateFormatter.parse(this)
 
 fun Date.toFormattedDateString(): String = dateToStringFormatter.format(this)
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun String.toLocalDate(): LocalDate? {
+    val year = this.substring(0,4).toInt()
+    val month = this.substring(5,7).toInt()
+    val dayOfMonth = this.substring(8).toInt()
+
+    return LocalDate.of(year, month, dayOfMonth)
+}

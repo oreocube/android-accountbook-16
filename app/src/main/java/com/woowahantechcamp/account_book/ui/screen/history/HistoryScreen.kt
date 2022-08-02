@@ -199,12 +199,14 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 title = item.category,
                 color = item.color
             )
-            Text(
-                text = item.payment,
-                fontSize = 10.sp,
-                color = Purple,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            if (item.type == Type.EXPENSES) {
+                Text(
+                    text = item.payment ?: "",
+                    fontSize = 10.sp,
+                    color = Purple,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
         }
         Box(
             modifier = Modifier

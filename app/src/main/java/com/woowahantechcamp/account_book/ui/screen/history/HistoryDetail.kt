@@ -18,13 +18,14 @@ import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.util.now
+import com.woowahantechcamp.account_book.util.toLocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryDetail(
     viewModel: HistoryViewModel,
-    type: Type? = Type.INCOME,
-    id: Int? = -1,
+    type: Type = Type.INCOME,
+    id: Int = -1,
     onSettingAddClick: (SettingType) -> Unit,
     onUpPressed: () -> Unit,
     onSaved: () -> Unit
@@ -40,17 +41,26 @@ fun HistoryDetail(
     ) {
         val selectedType = rememberSaveable { mutableStateOf(type) }
 
-        val date = rememberSaveable { mutableStateOf(now) }
-        val amount = rememberSaveable { mutableStateOf(0) }
-        val content = rememberSaveable { mutableStateOf("") }
+        val passedData = if (id > 0) viewModel.getHistoryItem(id) else null
+
+        val date = rememberSaveable { mutableStateOf(passedData?.date?.toLocalDate() ?: now) }
+        val amount = rememberSaveable { mutableStateOf(passedData?.amount ?: 0) }
+        val content = rememberSaveable { mutableStateOf(passedData?.title ?: "") }
 
         val calendarVisible = rememberSaveable { mutableStateOf(false) }
 
-        val paymentId = rememberSaveable { mutableStateOf(-1) }
-        val payment = rememberSaveable { mutableStateOf("") }
+        val paymentId = rememberSaveable { mutableStateOf(passedData?.paymentId ?: -1) }
+        val payment = rememberSaveable { mutableStateOf(passedData?.payment ?: "") }
 
-        val categoryId = rememberSaveable { mutableStateOf(-1) }
-        val category = rememberSaveable { mutableStateOf("") }
+        val payments = viewModel.paymentMethod.value
+
+        val categoryId = rememberSaveable { mutableStateOf(passedData?.categoryId ?: -1) }
+        val category = rememberSaveable { mutableStateOf(passedData?.category ?: "") }
+
+        val categories = when (selectedType.value) {
+            Type.INCOME -> viewModel.incomeCategory.value
+            Type.EXPENSES -> viewModel.expenseCategory.value
+        }
 
         val buttonEnable = if (selectedType.value == Type.INCOME) {
             (amount.value != 0) && (categoryId.value != -1)
@@ -90,7 +100,7 @@ fun HistoryDetail(
                     InputField(title = "결제수단") {
                         SelectionField(
                             displayText = payment.value,
-                            list = listOf(),
+                            list = payments ?: listOf(),
                             onItemSelected = {
                                 paymentId.value = it.id
                                 payment.value = it.title
@@ -104,7 +114,7 @@ fun HistoryDetail(
                 InputField(title = "분류") {
                     SelectionField(
                         displayText = category.value,
-                        list = listOf(),
+                        list = categories ?: listOf(),
                         onItemSelected = {
                             categoryId.value = it.id
                             category.value = it.title
@@ -130,6 +140,15 @@ fun HistoryDetail(
                 title = if (id == -1) "등록하기" else "수정하기",
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
+                viewModel.saveHistoryItem(
+                    id = id,
+                    type = type,
+                    date = date.value.toString(),
+                    amount = amount.value,
+                    paymentId = paymentId.value,
+                    categoryId = categoryId.value,
+                    content = content.value
+                )
                 onSaved()
             }
         }
