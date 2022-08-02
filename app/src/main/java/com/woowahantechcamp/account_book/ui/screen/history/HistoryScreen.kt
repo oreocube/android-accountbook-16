@@ -126,6 +126,8 @@ fun HistoryScreen(
                 enabled = isEditMode.value.not(),
                 incomeChecked = incomeChecked.value,
                 expenseChecked = expenseChecked.value,
+                sumOfIncome = viewModel.sumOfIncome.value,
+                sumOfExpense = viewModel.sumOfExpense.value,
                 onChanged = {
                     if (it == Type.INCOME) incomeChecked.value = !incomeChecked.value
                     else expenseChecked.value = !expenseChecked.value

@@ -28,6 +28,8 @@ fun FilterButton(
     enabled: Boolean,
     incomeChecked: Boolean,
     expenseChecked: Boolean,
+    sumOfIncome: Int,
+    sumOfExpense: Int,
     onChanged: (Type) -> Unit,
     modifier: Modifier
 ) {
@@ -44,7 +46,7 @@ fun FilterButton(
                 FilterItem(
                     enabled = enabled,
                     type = it,
-                    amount = 2345600, // TODO
+                    amount = if (it == Type.INCOME) sumOfIncome else sumOfExpense,
                     selected = if (it == Type.INCOME) incomeChecked else expenseChecked,
                     modifier = Modifier
                         .weight(1f)
