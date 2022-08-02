@@ -152,4 +152,16 @@ class AccountBookRepository @Inject constructor(
             Result.Error(e.message ?: "exception occur")
         }
     }
+
+    suspend fun deleteHistoryItems(
+        list: List<Int>
+    ): Result<Int> {
+        return try {
+            val result = dataSource.deleteHistoryItems(list)
+
+            Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
 }

@@ -2,7 +2,10 @@ package com.woowahantechcamp.account_book.ui.screen.history
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,10 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import com.woowahantechcamp.account_book.R
 import com.woowahantechcamp.account_book.ui.component.CategoryTag
 import com.woowahantechcamp.account_book.ui.component.FilterButton
+import com.woowahantechcamp.account_book.ui.component.TopAppBarForEditMode
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
 import com.woowahantechcamp.account_book.ui.model.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.Type
@@ -39,6 +43,10 @@ fun HistoryScreen(
     onHistoryItemClick: (Type, Int) -> Unit,
     onAddClick: (Type) -> Unit
 ) {
+    val isEditMode = rememberSaveable { mutableStateOf(false) }
+
+    val selectedItems = remember { viewModel.selectedItems }
+
     val year = rememberSaveable { mutableStateOf(now.year) }
     val month = rememberSaveable { mutableStateOf(now.monthValue) }
 
@@ -56,30 +64,43 @@ fun HistoryScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarWithMonth(
-                year = year.value,
-                month = month.value,
-                onPrevMonthClick = {
-                    if (month.value == 1) {
-                        year.value--
-                        month.value = 12
-                    } else {
-                        month.value--
+            if (isEditMode.value) {
+                TopAppBarForEditMode(
+                    count = selectedItems.size,
+                    onUpPressed = {
+                        viewModel.clearSelectedItem()
+                        isEditMode.value = false
+                    },
+                    onDeleteClicked = {
+                        viewModel.deleteAllSelectedItems()
                     }
+                )
+            } else {
+                TopAppBarWithMonth(
+                    year = year.value,
+                    month = month.value,
+                    onPrevMonthClick = {
+                        if (month.value == 1) {
+                            year.value--
+                            month.value = 12
+                        } else {
+                            month.value--
+                        }
 
-                    viewModel.fetchData(year.value, month.value)
-                },
-                onNextMonthClick = {
-                    if (month.value == 12) {
-                        year.value++
-                        month.value = 1
-                    } else {
-                        month.value++
+                        viewModel.fetchData(year.value, month.value)
+                    },
+                    onNextMonthClick = {
+                        if (month.value == 12) {
+                            year.value++
+                            month.value = 1
+                        } else {
+                            month.value++
+                        }
+
+                        viewModel.fetchData(year.value, month.value)
                     }
-
-                    viewModel.fetchData(year.value, month.value)
-                }
-            )
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -102,17 +123,40 @@ fun HistoryScreen(
     ) {
         Column {
             FilterButton(
+                enabled = isEditMode.value.not(),
                 incomeChecked = incomeChecked.value,
                 expenseChecked = expenseChecked.value,
+                sumOfIncome = viewModel.sumOfIncome.value,
+                sumOfExpense = viewModel.sumOfExpense.value,
                 onChanged = {
                     if (it == Type.INCOME) incomeChecked.value = !incomeChecked.value
                     else expenseChecked.value = !expenseChecked.value
                 },
                 modifier = Modifier.padding(16.dp)
             )
-            HistoryList(grouped = grouped, onHistoryItemClick = { type, id ->
-                onHistoryItemClick(type, id)
-            })
+            HistoryList(
+                selectedItems = selectedItems,
+                editMode = isEditMode.value,
+                grouped = grouped,
+                onHistoryItemClick = { type, id ->
+                    if (isEditMode.value) {
+                        if (selectedItems.contains(id)) {
+                            viewModel.removeSelectedItem(id)
+                            if (selectedItems.isEmpty()) {
+                                isEditMode.value = false
+                            }
+                        } else {
+                            viewModel.addSelectedItem(id)
+                        }
+                    } else {
+                        onHistoryItemClick(type, id)
+                    }
+                },
+                onModeChanged = { id ->
+                    isEditMode.value = true
+                    viewModel.addSelectedItem(id)
+                }
+            )
         }
     }
 }
@@ -120,8 +164,11 @@ fun HistoryScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryList(
+    selectedItems: List<Int>,
+    editMode: Boolean,
     grouped: Map<String, List<HistoryModel>>,
-    onHistoryItemClick: (Type, Int) -> Unit
+    onHistoryItemClick: (Type, Int) -> Unit,
+    onModeChanged: (Int) -> Unit
 ) {
     LazyColumn {
         grouped.forEach { (date, list) ->
@@ -138,10 +185,13 @@ fun HistoryList(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 HistoryItem(
+                    selected = selectedItems.contains(item.id),
+                    editMode = editMode,
                     item = item,
                     onHistoryItemClick = {
                         onHistoryItemClick(it.type, it.id)
-                    }
+                    },
+                    onModeChanged = { onModeChanged(it) }
                 )
             }
             item {
@@ -185,50 +235,78 @@ fun HistoryItemHeader(date: String, sumOfIncome: Int, sumOfExpenses: Int) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) {
-    Column(
+fun HistoryItem(
+    selected: Boolean,
+    editMode: Boolean,
+    item: HistoryModel,
+    onHistoryItemClick: (HistoryModel) -> Unit,
+    onModeChanged: (Int) -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onHistoryItemClick(item) }
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            CategoryTag(
-                modifier = Modifier.align(Alignment.CenterStart),
-                title = item.category,
-                color = item.color
+            .background(color = if (selected) White else Color.Transparent)
+            .combinedClickable(
+                onClick = { onHistoryItemClick(item) },
+                onLongClick = {
+                    if (editMode.not()) {
+                        onModeChanged(item.id)
+                    }
+                }
             )
-            if (item.type == Type.EXPENSES) {
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (selected) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_checkbox_checked),
+                contentDescription = "checked",
+                modifier = Modifier.padding(end = 16.dp)
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                CategoryTag(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    title = item.category,
+                    color = item.color
+                )
+                if (item.type == Type.EXPENSES) {
+                    Text(
+                        text = item.payment ?: "",
+                        fontSize = 10.sp,
+                        color = Purple,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                if (item.title.isNotEmpty()) {
+                    Text(
+                        text = item.title,
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Purple
+                    )
+                }
                 Text(
-                    text = item.payment ?: "",
-                    fontSize = 10.sp,
-                    color = Purple,
+                    text = if (item.type == Type.INCOME) "${item.amount.toCurrency()}원" else "-${item.amount}원",
+                    fontWeight = FontWeight.Bold,
+                    color = if (item.type == Type.INCOME) Blue4 else Red,
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            if (item.title.isNotEmpty()) {
-                Text(
-                    text = item.title,
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = Purple
-                )
-            }
-            Text(
-                text = if (item.type == Type.INCOME) "${item.amount.toCurrency()}원" else "-${item.amount}원",
-                fontWeight = FontWeight.Bold,
-                color = if (item.type == Type.INCOME) Blue4 else Red,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
     }
 }

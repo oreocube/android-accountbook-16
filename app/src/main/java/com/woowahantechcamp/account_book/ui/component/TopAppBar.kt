@@ -11,6 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.R
+import com.woowahantechcamp.account_book.ui.theme.Red
 
 private val AppBarHeight = 56.dp
 
@@ -80,6 +81,44 @@ fun TopAppBarWithMonth(
                     painter = painterResource(id = R.drawable.ic_right),
                     contentDescription = "right",
                     tint = MaterialTheme.colors.primary
+                )
+            }
+        }
+        DividerPrimary()
+    }
+}
+
+@Composable
+fun TopAppBarForEditMode(
+    count: Int,
+    onUpPressed: () -> Unit,
+    onDeleteClicked: () -> Unit
+) {
+    Column {
+        TopAppBar(
+            backgroundColor = MaterialTheme.colors.background,
+            elevation = 0.dp,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
+            IconButton(onClick = { onUpPressed() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = "back",
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+            Text(
+                text = if (count == 0) "다중선택" else "$count 개 선택",
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                color = MaterialTheme.colors.primary
+            )
+            IconButton(onClick = { onDeleteClicked() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_trash),
+                    contentDescription = "right",
+                    tint = Red
                 )
             }
         }

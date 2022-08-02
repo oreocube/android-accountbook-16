@@ -224,7 +224,9 @@ class AccountBookDataSource @Inject constructor(
                 put(HistoryEntry.COLUMN_NAME_TYPE, type)
                 put(HistoryEntry.COLUMN_NAME_DATE, date)
                 put(HistoryEntry.COLUMN_NAME_AMOUNT, amount)
-                if (type == 2) put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId)
+                if (type == 2) {
+                    put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId)
+                }
                 put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, categoryId)
                 put(HistoryEntry.COLUMN_NAME_CONTENT, content)
             }
@@ -266,18 +268,22 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun deleteHistory(
-        id: Int
+    suspend fun deleteHistoryItems(
+        list: List<Int>
     ): Int = withContext(ioDispatcher) {
         dbHelper.writableDatabase.run {
-            val selection = "${BaseColumns._ID} = ?"
-            val selectionArgs = arrayOf("$id")
+            var count = 0
+            list.forEach {
+                val selection = "${BaseColumns._ID} = ?"
+                val selectionArgs = arrayOf("$it")
 
-            delete(
-                HistoryEntry.TABLE_NAME,
-                selection,
-                selectionArgs
-            )
+                count += delete(
+                    HistoryEntry.TABLE_NAME,
+                    selection,
+                    selectionArgs
+                )
+            }
+            count
         }
     }
 }
