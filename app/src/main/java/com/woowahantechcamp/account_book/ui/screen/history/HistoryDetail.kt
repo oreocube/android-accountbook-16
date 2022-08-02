@@ -142,7 +142,7 @@ fun HistoryDetail(
             ) {
                 viewModel.saveHistoryItem(
                     id = id,
-                    type = type,
+                    type = selectedType.value,
                     date = date.value.toString(),
                     amount = amount.value,
                     paymentId = paymentId.value,

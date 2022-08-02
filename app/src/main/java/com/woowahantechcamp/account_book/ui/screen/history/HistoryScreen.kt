@@ -301,7 +301,7 @@ fun HistoryItem(
                     )
                 }
                 Text(
-                    text = if (item.type == Type.INCOME) "${item.amount.toCurrency()}원" else "-${item.amount}원",
+                    text = if (item.type == Type.INCOME) "${item.amount.toCurrency()}원" else "-${item.amount.toCurrency()}원",
                     fontWeight = FontWeight.Bold,
                     color = if (item.type == Type.INCOME) Blue4 else Red,
                     modifier = Modifier.align(Alignment.CenterEnd)
