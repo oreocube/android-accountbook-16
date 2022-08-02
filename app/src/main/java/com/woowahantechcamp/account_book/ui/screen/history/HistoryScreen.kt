@@ -67,9 +67,12 @@ fun HistoryScreen(
             if (isEditMode.value) {
                 TopAppBarForEditMode(
                     count = selectedItems.size,
-                    onUpPressed = { },
-                    onDeleteClicked = {
+                    onUpPressed = {
                         viewModel.clearSelectedItem()
+                        isEditMode.value = false
+                    },
+                    onDeleteClicked = {
+                        viewModel.deleteAllSelectedItems()
                     }
                 )
             } else {

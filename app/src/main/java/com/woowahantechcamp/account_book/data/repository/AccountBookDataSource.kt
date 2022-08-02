@@ -268,18 +268,22 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun deleteHistory(
-        id: Int
+    suspend fun deleteHistoryItems(
+        list: List<Int>
     ): Int = withContext(ioDispatcher) {
         dbHelper.writableDatabase.run {
-            val selection = "${BaseColumns._ID} = ?"
-            val selectionArgs = arrayOf("$id")
+            var count = 0
+            list.forEach {
+                val selection = "${BaseColumns._ID} = ?"
+                val selectionArgs = arrayOf("$it")
 
-            delete(
-                HistoryEntry.TABLE_NAME,
-                selection,
-                selectionArgs
-            )
+                count += delete(
+                    HistoryEntry.TABLE_NAME,
+                    selection,
+                    selectionArgs
+                )
+            }
+            count
         }
     }
 }

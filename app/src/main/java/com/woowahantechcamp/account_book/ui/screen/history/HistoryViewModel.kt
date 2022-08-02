@@ -134,4 +134,14 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    fun deleteAllSelectedItems() {
+        viewModelScope.launch {
+            val result = repository.deleteHistoryItems(_selectedItems)
+
+            if (result is Result.Success) {
+                _selectedItems.clear()
+            }
+        }
+    }
+
 }
