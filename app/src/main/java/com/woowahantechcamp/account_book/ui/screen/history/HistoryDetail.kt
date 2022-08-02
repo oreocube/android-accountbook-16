@@ -1,7 +1,6 @@
 package com.woowahantechcamp.account_book.ui.screen.history
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,25 +13,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.Type
-import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
+import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.util.now
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryDetail(
+    viewModel: HistoryViewModel,
     type: Type? = Type.INCOME,
-    id: Int? = -1
+    id: Int? = -1,
+    onSettingAddClick: (SettingType) -> Unit,
+    onUpPressed: () -> Unit,
+    onSaved: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBarWithUpButton(
-                title = if (id == -1) "내역 등록하기" else "내역 수정하기"
+                title = if (id == -1) "내역 등록" else "내역 수정"
             ) {
-                // up
+                onUpPressed()
             }
         }
     ) {
@@ -93,7 +95,9 @@ fun HistoryDetail(
                                 paymentId.value = it.id
                                 payment.value = it.title
                             },
-                            onAddSelected = {}
+                            onAddSelected = {
+                                onSettingAddClick(SettingType.PAYMENT)
+                            }
                         )
                     }
                 }
@@ -105,7 +109,12 @@ fun HistoryDetail(
                             categoryId.value = it.id
                             category.value = it.title
                         },
-                        onAddSelected = {}
+                        onAddSelected = {
+                            onSettingAddClick(
+                                if (selectedType.value == Type.INCOME) SettingType.INCOME
+                                else SettingType.EXPENSE
+                            )
+                        }
                     )
                 }
 
@@ -121,18 +130,9 @@ fun HistoryDetail(
                 title = if (id == -1) "등록하기" else "수정하기",
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
-
+                onSaved()
             }
         }
 
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-fun HistoryDetailPreview() {
-    AccountbookTheme {
-        HistoryDetail(type = Type.INCOME)
     }
 }

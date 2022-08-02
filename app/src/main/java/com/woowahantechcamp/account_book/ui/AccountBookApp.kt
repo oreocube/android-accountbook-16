@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.screen.history.HistoryDetail
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryViewModel
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigation
@@ -55,7 +57,15 @@ fun AccountBookApp(
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(route = AccountBookScreen.History.route) {
-                    HistoryScreen(historyViewModel)
+                    HistoryScreen(
+                        viewModel = historyViewModel,
+                        onHistoryItemClick = { type, id ->
+                            navController.navigate(route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/$type/$id")
+                        },
+                        onAddClick = { type ->
+                            navController.navigate(route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/$type")
+                        }
+                    )
                 }
                 composable(route = AccountBookScreen.Calendar.route) {
                     Text(AccountBookScreen.Calendar.route)
@@ -105,6 +115,45 @@ fun AccountBookApp(
                         viewModel = settingViewModel,
                         title = type.addTitle,
                         type = type,
+                        onUpPressed = { navController.navigateUp() },
+                        onSaved = { navController.navigateUp() }
+                    )
+                }
+                composable(
+                    route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/{type}",
+                    arguments = listOf(navArgument("type") {
+                        type = NavType.EnumType(Type::class.java)
+                    })
+                ) { backStackEntry ->
+                    val type = backStackEntry.arguments?.get("type") as Type
+
+                    HistoryDetail(
+                        viewModel = historyViewModel,
+                        type = type,
+                        onSettingAddClick = {
+                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
+                        },
+                        onUpPressed = { navController.navigateUp() },
+                        onSaved = { navController.navigateUp() }
+                    )
+                }
+                composable(
+                    route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/{type}/{id}",
+                    arguments = listOf(
+                        navArgument("type") { type = NavType.EnumType(Type::class.java) },
+                        navArgument("id") { type = NavType.IntType }
+                    )
+                ) { backStackEntry ->
+                    val type = backStackEntry.arguments?.get("type") as Type
+                    val id = backStackEntry.arguments?.get("id") as Int
+
+                    HistoryDetail(
+                        viewModel = historyViewModel,
+                        type = type,
+                        id = id,
+                        onSettingAddClick = {
+                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
+                        },
                         onUpPressed = { navController.navigateUp() },
                         onSaved = { navController.navigateUp() }
                     )
