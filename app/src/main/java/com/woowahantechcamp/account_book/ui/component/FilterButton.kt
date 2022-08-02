@@ -25,6 +25,7 @@ import com.woowahantechcamp.account_book.util.toCurrency
 
 @Composable
 fun FilterButton(
+    enabled: Boolean,
     incomeChecked: Boolean,
     expenseChecked: Boolean,
     onChanged: (Type) -> Unit,
@@ -41,12 +42,14 @@ fun FilterButton(
         ) {
             Type.values().forEach {
                 FilterItem(
+                    enabled = enabled,
                     type = it,
                     amount = 2345600, // TODO
                     selected = if (it == Type.INCOME) incomeChecked else expenseChecked,
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { onChanged(it) })
+                        .clickable { if (enabled) onChanged(it) }
+                )
             }
         }
     }
@@ -54,15 +57,22 @@ fun FilterButton(
 
 @Composable
 fun FilterItem(
+    enabled: Boolean,
     type: Type,
     amount: Int,
     selected: Boolean,
     modifier: Modifier
 ) {
+    val backgroundColor = if (enabled) {
+        if (selected) MaterialTheme.colors.primary else LightPurple
+    } else {
+        Color.LightGray
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = if (selected) MaterialTheme.colors.primary else LightPurple)
+            .background(color = backgroundColor)
             .padding(8.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically

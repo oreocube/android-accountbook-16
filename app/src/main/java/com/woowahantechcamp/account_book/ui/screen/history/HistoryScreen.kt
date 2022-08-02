@@ -120,6 +120,7 @@ fun HistoryScreen(
     ) {
         Column {
             FilterButton(
+                enabled = isEditMode.value.not(),
                 incomeChecked = incomeChecked.value,
                 expenseChecked = expenseChecked.value,
                 onChanged = {
