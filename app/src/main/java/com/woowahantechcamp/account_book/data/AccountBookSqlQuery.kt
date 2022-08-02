@@ -51,4 +51,5 @@ const val SQL_SELECT_ALL_HISTORIES =
             "LEFT JOIN ${CategoryEntry.TABLE_NAME} " +
             "ON ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_CATEGORY_ID} " +
             "= ${CategoryEntry.TABLE_NAME}.${BaseColumns._ID} " +
-            "AND ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN date(?) AND date(?)"
+            "WHERE ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN ? AND ? " +
+            "ORDER BY ${HistoryEntry.COLUMN_NAME_DATE} DESC"

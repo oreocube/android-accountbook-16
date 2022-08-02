@@ -224,7 +224,9 @@ class AccountBookDataSource @Inject constructor(
                 put(HistoryEntry.COLUMN_NAME_TYPE, type)
                 put(HistoryEntry.COLUMN_NAME_DATE, date)
                 put(HistoryEntry.COLUMN_NAME_AMOUNT, amount)
-                if (type == 2) put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId)
+                if (type == 2) {
+                    put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId)
+                }
                 put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, categoryId)
                 put(HistoryEntry.COLUMN_NAME_CONTENT, content)
             }
