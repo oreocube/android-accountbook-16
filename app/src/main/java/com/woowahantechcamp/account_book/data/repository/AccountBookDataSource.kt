@@ -5,10 +5,12 @@ import android.provider.BaseColumns
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import com.woowahantechcamp.account_book.data.SQL_SELECT_ALL_HISTORIES
+import com.woowahantechcamp.account_book.data.SQL_SELECT_GROUP_BY_CATEGORY
 import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
 import com.woowahantechcamp.account_book.data.entity.HistoryEntity
 import com.woowahantechcamp.account_book.data.entity.PaymentEntity
+import com.woowahantechcamp.account_book.data.entity.StatisticEntity
 import com.woowahantechcamp.account_book.util.query
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -284,6 +286,29 @@ class AccountBookDataSource @Inject constructor(
                 )
             }
             count
+        }
+    }
+
+    suspend fun getSumOfExpenseCategory(startDate: String, endDate: String) = withContext(ioDispatcher) {
+        dbHelper.readableDatabase.run {
+            execSQL(SQL_SET_PRAGMA)
+
+            val cursor = rawQuery(SQL_SELECT_GROUP_BY_CATEGORY, arrayOf(startDate, endDate))
+
+            val items = mutableListOf<StatisticEntity>()
+            with(cursor) {
+                while (moveToNext()) {
+                    val categoryId = getInt(0)
+                    val categoryTitle = getString(1)
+                    val color = getLong(2)
+                    val sum = getLong(3)
+
+                    items.add(StatisticEntity(categoryId, categoryTitle, color, sum))
+                }
+            }
+            cursor.close()
+
+            items
         }
     }
 }

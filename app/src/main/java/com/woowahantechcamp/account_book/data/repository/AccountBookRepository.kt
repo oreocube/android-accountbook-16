@@ -3,10 +3,7 @@ package com.woowahantechcamp.account_book.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
-import com.woowahantechcamp.account_book.ui.model.CategoryModel
-import com.woowahantechcamp.account_book.ui.model.HistoryModel
-import com.woowahantechcamp.account_book.ui.model.PaymentModel
-import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.model.*
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.util.Result
 import java.time.YearMonth
@@ -94,7 +91,6 @@ class AccountBookRepository @Inject constructor(
         val endDate = YearMonth.of(year, month).atEndOfMonth().toString()
 
         return try {
-
             val result = dataSource.getAllHistory(startDate, endDate)
 
             Result.Success(data = result.map {
@@ -160,6 +156,27 @@ class AccountBookRepository @Inject constructor(
             val result = dataSource.deleteHistoryItems(list)
 
             Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getSumOfExpense(year: Int, month: Int): Result<List<StatisticModel>> {
+        val startDate = YearMonth.of(year, month).atDay(1).toString()
+        val endDate = YearMonth.of(year, month).atEndOfMonth().toString()
+
+        return try {
+            val result = dataSource.getSumOfExpenseCategory(startDate, endDate)
+
+            Result.Success(data = result.map {
+                StatisticModel(
+                    categoryId = it.categoryId,
+                    categoryTitle = it.categoryTitle,
+                    color = Color(it.color),
+                    sum = it.sum
+                )
+            })
         } catch (e: Exception) {
             Result.Error(e.message ?: "exception occur")
         }
