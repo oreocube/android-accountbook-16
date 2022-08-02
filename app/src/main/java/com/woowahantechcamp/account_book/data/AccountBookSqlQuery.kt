@@ -53,3 +53,17 @@ const val SQL_SELECT_ALL_HISTORIES =
             "= ${CategoryEntry.TABLE_NAME}.${BaseColumns._ID} " +
             "WHERE ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN ? AND ? " +
             "ORDER BY ${HistoryEntry.COLUMN_NAME_DATE} DESC"
+
+const val SQL_SELECT_GROUP_BY_CATEGORY =
+    "SELECT ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_CATEGORY_ID}, " +
+            "${CategoryEntry.TABLE_NAME}.${CategoryEntry.COLUMN_NAME_TITLE}, "+
+            "${CategoryEntry.TABLE_NAME}.${CategoryEntry.COLUMN_NAME_COLOR}, " +
+            "SUM(${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_AMOUNT}) AS SUM " +
+            "FROM ${HistoryEntry.TABLE_NAME} " +
+            "LEFT JOIN ${CategoryEntry.TABLE_NAME} " +
+            "ON ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_CATEGORY_ID} " +
+            "= ${CategoryEntry.TABLE_NAME}.${BaseColumns._ID} " +
+            "WHERE ${HistoryEntry.TABLE_NAME}.${CategoryEntry.COLUMN_NAME_TYPE} = 2 " +
+            "AND ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN ? AND ? " +
+            "GROUP BY ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_CATEGORY_ID} " +
+            "ORDER BY SUM DESC"
