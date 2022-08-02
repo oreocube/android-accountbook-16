@@ -115,4 +115,41 @@ class AccountBookRepository @Inject constructor(
             Result.Error(e.message ?: "exception occur")
         }
     }
+
+    suspend fun updateHistory(
+        id: Int,
+        date: String,
+        type: Int,
+        content: String?,
+        amount: Int,
+        paymentId: Int,
+        categoryId: Int
+    ): Result<Int> {
+        return try {
+            val result =
+                dataSource.updateHistory(id, date, type, amount, content, paymentId, categoryId)
+
+            Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    suspend fun insertHistory(
+        type: Int,
+        date: String,
+        amount: Int,
+        paymentId: Int,
+        categoryId: Int,
+        content: String?
+    ): Result<Long> {
+        return try {
+            val result =
+                dataSource.insertHistoryItem(type, date, amount, paymentId, categoryId, content)
+
+            Result.Success(result)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
 }
