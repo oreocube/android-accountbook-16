@@ -2,6 +2,8 @@ package com.woowahantechcamp.account_book.data.repository
 
 import android.content.ContentValues
 import android.provider.BaseColumns
+import androidx.core.database.getIntOrNull
+import androidx.core.database.getStringOrNull
 import com.woowahantechcamp.account_book.data.SQL_SELECT_ALL_HISTORIES
 import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
@@ -192,8 +194,8 @@ class AccountBookDataSource @Inject constructor(
                                 type = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_TYPE)),
                                 content = getString(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_CONTENT)),
                                 amount = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_AMOUNT)),
-                                paymentId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
-                                paymentTitle = getString(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
+                                paymentId = getIntOrNull(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
+                                paymentTitle = getStringOrNull(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
                                 categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
                                 categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
                                 color = getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
@@ -207,17 +209,24 @@ class AccountBookDataSource @Inject constructor(
             }
         }
 
-    suspend fun insertHistoryItem(item: HistoryEntity) = withContext(ioDispatcher) {
+    suspend fun insertHistoryItem(
+        type: Int,
+        date: String,
+        amount: Int,
+        paymentId: Int,
+        categoryId: Int,
+        content: String?
+    ) = withContext(ioDispatcher) {
         dbHelper.writableDatabase.run {
             execSQL(SQL_SET_PRAGMA)
 
             val values = ContentValues().apply {
-                put(HistoryEntry.COLUMN_NAME_TYPE, item.type)
-                put(HistoryEntry.COLUMN_NAME_DATE, item.date)
-                put(HistoryEntry.COLUMN_NAME_AMOUNT, item.amount)
-                put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, item.paymentId)
-                put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, item.categoryId)
-                put(HistoryEntry.COLUMN_NAME_CONTENT, item.content)
+                put(HistoryEntry.COLUMN_NAME_TYPE, type)
+                put(HistoryEntry.COLUMN_NAME_DATE, date)
+                put(HistoryEntry.COLUMN_NAME_AMOUNT, amount)
+                if (type == 2) put(HistoryEntry.COLUMN_NAME_PAYMENT_ID, paymentId)
+                put(HistoryEntry.COLUMN_NAME_CATEGORY_ID, categoryId)
+                put(HistoryEntry.COLUMN_NAME_CONTENT, content)
             }
 
             insert(HistoryEntry.TABLE_NAME, null, values)

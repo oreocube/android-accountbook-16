@@ -6,8 +6,8 @@ data class HistoryEntity(
     val type: Int,
     val content: String?,
     val amount: Int,
-    val paymentId: Int,
-    val paymentTitle: String,
+    val paymentId: Int?,
+    val paymentTitle: String?,
     val categoryId: Int,
     val categoryTitle: String,
     val color: Long

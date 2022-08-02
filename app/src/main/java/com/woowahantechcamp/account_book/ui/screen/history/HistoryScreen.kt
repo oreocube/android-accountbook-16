@@ -35,7 +35,9 @@ import com.woowahantechcamp.account_book.util.toFormattedDateString
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryScreen(
-    viewModel: HistoryViewModel
+    viewModel: HistoryViewModel,
+    onHistoryItemClick: (Type, Int) -> Unit,
+    onAddClick: (Type) -> Unit
 ) {
     val year = rememberSaveable { mutableStateOf(now.year) }
     val month = rememberSaveable { mutableStateOf(now.monthValue) }
@@ -68,7 +70,7 @@ fun HistoryScreen(
                     viewModel.fetchData(year.value, month.value)
                 },
                 onNextMonthClick = {
-                    if (month.value == 12){
+                    if (month.value == 12) {
                         year.value++
                         month.value = 1
                     } else {
@@ -81,7 +83,13 @@ fun HistoryScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    onAddClick(
+                        // 지출만 체크된 상태가 아닌 경우는 모두 수입 추가
+                        if (!incomeChecked.value && expenseChecked.value) Type.EXPENSES
+                        else Type.INCOME
+                    )
+                },
                 backgroundColor = Yellow
             ) {
                 Icon(
@@ -102,7 +110,9 @@ fun HistoryScreen(
                 },
                 modifier = Modifier.padding(16.dp)
             )
-            HistoryList(grouped = grouped)
+            HistoryList(grouped = grouped, onHistoryItemClick = { type, id ->
+                onHistoryItemClick(type, id)
+            })
         }
     }
 }
@@ -110,7 +120,8 @@ fun HistoryScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryList(
-    grouped: Map<String, List<HistoryModel>>
+    grouped: Map<String, List<HistoryModel>>,
+    onHistoryItemClick: (Type, Int) -> Unit
 ) {
     LazyColumn {
         grouped.forEach { (date, list) ->
@@ -126,7 +137,12 @@ fun HistoryList(
                     thickness = 1.dp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                HistoryItem(item = item, onHistoryItemClick = {})
+                HistoryItem(
+                    item = item,
+                    onHistoryItemClick = {
+                        onHistoryItemClick(it.type, it.id)
+                    }
+                )
             }
             item {
                 Divider(
@@ -183,12 +199,14 @@ fun HistoryItem(item: HistoryModel, onHistoryItemClick: (HistoryModel) -> Unit) 
                 title = item.category,
                 color = item.color
             )
-            Text(
-                text = item.payment,
-                fontSize = 10.sp,
-                color = Purple,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            if (item.type == Type.EXPENSES) {
+                Text(
+                    text = item.payment ?: "",
+                    fontSize = 10.sp,
+                    color = Purple,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
         }
         Box(
             modifier = Modifier

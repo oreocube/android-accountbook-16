@@ -11,7 +11,7 @@ const val SQL_CREATE_HISTORY_TABLE =
             "${HistoryEntry.COLUMN_NAME_TYPE} INTEGER NOT NULL, " +
             "${HistoryEntry.COLUMN_NAME_DATE} DATE NOT NULL, " +
             "${HistoryEntry.COLUMN_NAME_AMOUNT} INTEGER NOT NULL, " +
-            "${HistoryEntry.COLUMN_NAME_PAYMENT_ID} INTEGER NOT NULL, " +
+            "${HistoryEntry.COLUMN_NAME_PAYMENT_ID} INTEGER, " +
             "${HistoryEntry.COLUMN_NAME_CATEGORY_ID} INTEGER NOT NULL, " +
             "${HistoryEntry.COLUMN_NAME_CONTENT} TEXT, " +
             "FOREIGN KEY (${HistoryEntry.COLUMN_NAME_PAYMENT_ID}) " +
@@ -44,7 +44,11 @@ const val SQL_SELECT_ALL_HISTORIES =
             "${PaymentEntry.TABLE_NAME}.${PaymentEntry.COLUMN_NAME_TITLE}, " +
             "${CategoryEntry.TABLE_NAME}.${CategoryEntry.COLUMN_NAME_TITLE}, " +
             "${CategoryEntry.TABLE_NAME}.${CategoryEntry.COLUMN_NAME_COLOR} " +
-            "FROM ${HistoryEntry.TABLE_NAME}, ${PaymentEntry.TABLE_NAME}, ${CategoryEntry.TABLE_NAME} " +
-            "WHERE ${HistoryEntry.COLUMN_NAME_PAYMENT_ID} = ${PaymentEntry.TABLE_NAME}.${BaseColumns._ID} " +
-            "AND ${HistoryEntry.COLUMN_NAME_CATEGORY_ID} = ${CategoryEntry.TABLE_NAME}.${BaseColumns._ID} " +
+            "FROM ${HistoryEntry.TABLE_NAME} " +
+            "LEFT JOIN ${PaymentEntry.TABLE_NAME} " +
+            "ON ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_PAYMENT_ID} " +
+            "= ${PaymentEntry.TABLE_NAME}.${BaseColumns._ID} " +
+            "LEFT JOIN ${CategoryEntry.TABLE_NAME} " +
+            "ON ${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_CATEGORY_ID} " +
+            "= ${CategoryEntry.TABLE_NAME}.${BaseColumns._ID} " +
             "AND ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN date(?) AND date(?)"
