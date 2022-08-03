@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +29,8 @@ import com.woowahantechcamp.account_book.ui.component.TopAppBarForEditMode
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
 import com.woowahantechcamp.account_book.ui.model.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.theme.*
-import com.woowahantechcamp.account_book.util.now
 import com.woowahantechcamp.account_book.util.toCurrency
 import com.woowahantechcamp.account_book.util.toDate
 import com.woowahantechcamp.account_book.util.toFormattedDateString
@@ -39,16 +38,19 @@ import com.woowahantechcamp.account_book.util.toFormattedDateString
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryScreen(
+    mainViewModel: MainViewModel,
     viewModel: HistoryViewModel,
     onHistoryItemClick: (Type, Int) -> Unit,
     onAddClick: (Type) -> Unit
 ) {
-    val isEditMode = rememberSaveable { mutableStateOf(false) }
+    val year = mainViewModel.currentDate.value.year
+    val month = mainViewModel.currentDate.value.monthValue
 
-    val selectedItems = remember { viewModel.selectedItems }
+    viewModel.fetchData(year, month)
 
-    val year = rememberSaveable { mutableStateOf(now.year) }
-    val month = rememberSaveable { mutableStateOf(now.monthValue) }
+    val isEditMode = viewModel.selectedItems.isNotEmpty()
+
+    val selectedItems = viewModel.selectedItems
 
     val incomeChecked = rememberSaveable { mutableStateOf(true) }
     val expenseChecked = rememberSaveable { mutableStateOf(false) }
@@ -64,12 +66,11 @@ fun HistoryScreen(
 
     Scaffold(
         topBar = {
-            if (isEditMode.value) {
+            if (isEditMode) {
                 TopAppBarForEditMode(
                     count = selectedItems.size,
                     onUpPressed = {
                         viewModel.clearSelectedItem()
-                        isEditMode.value = false
                     },
                     onDeleteClicked = {
                         viewModel.deleteAllSelectedItems()
@@ -77,27 +78,21 @@ fun HistoryScreen(
                 )
             } else {
                 TopAppBarWithMonth(
-                    year = year.value,
-                    month = month.value,
+                    year = year,
+                    month = month,
                     onPrevMonthClick = {
-                        if (month.value == 1) {
-                            year.value--
-                            month.value = 12
-                        } else {
-                            month.value--
-                        }
-
-                        viewModel.fetchData(year.value, month.value)
+                        mainViewModel.moveToPrevMonth()
+                        viewModel.fetchData(
+                            year = mainViewModel.currentDate.value.year,
+                            month = mainViewModel.currentDate.value.monthValue
+                        )
                     },
                     onNextMonthClick = {
-                        if (month.value == 12) {
-                            year.value++
-                            month.value = 1
-                        } else {
-                            month.value++
-                        }
-
-                        viewModel.fetchData(year.value, month.value)
+                        mainViewModel.moveToNextMonth()
+                        viewModel.fetchData(
+                            year = mainViewModel.currentDate.value.year,
+                            month = mainViewModel.currentDate.value.monthValue
+                        )
                     }
                 )
             }
@@ -123,7 +118,7 @@ fun HistoryScreen(
     ) {
         Column {
             FilterButton(
-                enabled = isEditMode.value.not(),
+                enabled = isEditMode.not(),
                 incomeChecked = incomeChecked.value,
                 expenseChecked = expenseChecked.value,
                 sumOfIncome = viewModel.sumOfIncome.value,
@@ -136,15 +131,12 @@ fun HistoryScreen(
             )
             HistoryList(
                 selectedItems = selectedItems,
-                editMode = isEditMode.value,
+                editMode = isEditMode,
                 grouped = grouped,
                 onHistoryItemClick = { type, id ->
-                    if (isEditMode.value) {
+                    if (isEditMode) {
                         if (selectedItems.contains(id)) {
                             viewModel.removeSelectedItem(id)
-                            if (selectedItems.isEmpty()) {
-                                isEditMode.value = false
-                            }
                         } else {
                             viewModel.addSelectedItem(id)
                         }
@@ -153,7 +145,6 @@ fun HistoryScreen(
                     }
                 },
                 onModeChanged = { id ->
-                    isEditMode.value = true
                     viewModel.addSelectedItem(id)
                 }
             )
