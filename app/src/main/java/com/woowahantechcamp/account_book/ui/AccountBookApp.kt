@@ -10,29 +10,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.graph.GraphScreen
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryDetail
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
-import com.woowahantechcamp.account_book.ui.screen.history.HistoryViewModel
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookBottomNavigation
 import com.woowahantechcamp.account_book.ui.screen.main.AccountBookScreen
+import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingDetail
-import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingScreen
+import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingViewModel
 import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountBookApp(
-    historyViewModel: HistoryViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     settingViewModel: SettingViewModel = hiltViewModel()
 ) {
     AccountbookTheme {
@@ -59,7 +61,8 @@ fun AccountBookApp(
             ) {
                 composable(route = AccountBookScreen.History.route) {
                     HistoryScreen(
-                        viewModel = historyViewModel,
+                        mainViewModel = mainViewModel,
+                        viewModel = hiltViewModel(),
                         onHistoryItemClick = { type, id ->
                             navController.navigate(route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/$type/$id")
                         },
@@ -72,7 +75,7 @@ fun AccountBookApp(
                     Text(AccountBookScreen.Calendar.route)
                 }
                 composable(route = AccountBookScreen.Graph.route) {
-                    GraphScreen()
+                    GraphScreen(mainViewModel = mainViewModel)
                 }
                 composable(route = AccountBookScreen.Setting.route) {
                     SettingScreen(
@@ -93,7 +96,7 @@ fun AccountBookApp(
                     )
                 ) { backStackEntry ->
                     val type = backStackEntry.arguments?.get("type") as SettingType
-                    val id = backStackEntry.arguments?.get("id") as Int // 아이템 조회시 필요 TODO
+                    val id = backStackEntry.arguments?.get("id") as Int
 
                     SettingDetail(
                         viewModel = settingViewModel,

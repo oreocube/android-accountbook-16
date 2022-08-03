@@ -17,26 +17,44 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.StatisticModel
+import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.theme.Red
-import com.woowahantechcamp.account_book.util.now
 import com.woowahantechcamp.account_book.util.toCurrency
 import kotlin.math.roundToInt
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GraphScreen(
+    mainViewModel: MainViewModel,
     viewModel: GraphViewModel = hiltViewModel()
 ) {
+    val year = mainViewModel.currentDate.value.year
+    val month = mainViewModel.currentDate.value.monthValue
+
+    viewModel.fetchData(year, month)
+
     val list = viewModel.statistics.value
     val sumOfExpense = list.sumOf { it.sum }
 
     Scaffold(
         topBar = {
             TopAppBarWithMonth(
-                year = now.year,
-                month = now.monthValue,
-                onPrevMonthClick = { },
-                onNextMonthClick = { }
+                year = year,
+                month = month,
+                onPrevMonthClick = {
+                    mainViewModel.moveToPrevMonth()
+                    viewModel.fetchData(
+                        year = mainViewModel.currentDate.value.year,
+                        month = mainViewModel.currentDate.value.monthValue
+                    )
+                },
+                onNextMonthClick = {
+                    mainViewModel.moveToNextMonth()
+                    viewModel.fetchData(
+                        year = mainViewModel.currentDate.value.year,
+                        month = mainViewModel.currentDate.value.monthValue
+                    )
+                }
             )
         }
     ) {

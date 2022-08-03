@@ -15,6 +15,7 @@ import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -22,6 +23,16 @@ import javax.inject.Inject
 class HistoryViewModel @Inject constructor(
     private val repository: AccountBookRepository
 ) : ViewModel() {
+
+    private val _year = mutableStateOf(LocalDate.now().year)
+    fun setYear(year: Int) {
+        _year.value = year
+    }
+
+    private val _month = mutableStateOf(LocalDate.now().monthValue)
+    fun setMonth(month: Int) {
+        _month.value = month
+    }
 
     private val _historyAll = MutableLiveData<List<HistoryModel>>()
     val historyAll: LiveData<List<HistoryModel>> = _historyAll
@@ -51,6 +62,8 @@ class HistoryViewModel @Inject constructor(
     }
 
     fun fetchData(year: Int, month: Int) {
+        setYear(year)
+        setMonth(month)
         viewModelScope.launch {
             val result = repository.getAllHistories(year, month)
 
@@ -70,6 +83,7 @@ class HistoryViewModel @Inject constructor(
 
             if (result is Result.Success) {
                 _selectedItems.clear()
+                fetchData(_year.value, _month.value)
             }
         }
     }
