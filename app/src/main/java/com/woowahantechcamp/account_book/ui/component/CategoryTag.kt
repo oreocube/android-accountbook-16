@@ -15,10 +15,9 @@ import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.ui.theme.White
 
 @Composable
-fun CategoryTag(modifier: Modifier, title: String, color: Color) {
+fun CategoryTag(modifier: Modifier = Modifier, title: String, color: Color) {
     Surface(
-        modifier = Modifier
-            .width(60.dp),
+        modifier = Modifier.width(60.dp),
         color = color,
         shape = RoundedCornerShape(50.dp)
     ) {
