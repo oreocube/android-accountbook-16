@@ -92,4 +92,5 @@ const val SQL_GET_SUM_GROUP_BY_DATE =
     "SELECT ${HistoryEntry.COLUMN_NAME_DATE}, SUM(${HistoryEntry.COLUMN_NAME_AMOUNT}), ${HistoryEntry.COLUMN_NAME_TYPE} " +
             "FROM ${HistoryEntry.TABLE_NAME} " +
             "GROUP BY ${HistoryEntry.COLUMN_NAME_TYPE}, ${HistoryEntry.COLUMN_NAME_DATE} " +
-            "ORDER BY ${HistoryEntry.COLUMN_NAME_DATE}"
+            "HAVING ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN date(?) AND date(?) " +
+            "ORDER BY ${HistoryEntry.COLUMN_NAME_DATE} "
