@@ -171,6 +171,7 @@ fun SelectionField(
         expanded = expended.value,
         modifier = Modifier
             .background(color = Color.Transparent)
+            .width(220.dp)
             .border(
                 1.dp,
                 color = MaterialTheme.colors.primary,
