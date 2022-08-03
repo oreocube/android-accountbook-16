@@ -3,6 +3,7 @@ package com.woowahantechcamp.account_book.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
+import com.woowahantechcamp.account_book.data.entity.CalendarEntity
 import com.woowahantechcamp.account_book.ui.model.*
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
 import com.woowahantechcamp.account_book.util.Result
@@ -200,6 +201,20 @@ class AccountBookRepository @Inject constructor(
                     sum = it.sum
                 )
             })
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getCalendarData(year: Int, month: Int): Result<List<CalendarEntity>> {
+        val startDate = YearMonth.of(year, month).atDay(1).toString()
+        val endDate = YearMonth.of(year, month).atEndOfMonth().toString()
+
+        return try {
+            val result = dataSource.getSumOfIncomeAndExpenseForDate(startDate, endDate)
+
+            Result.Success(result)
         } catch (e: Exception) {
             Result.Error(e.message ?: "exception occur")
         }

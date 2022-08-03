@@ -4,14 +4,8 @@ import android.content.ContentValues
 import android.provider.BaseColumns
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
-import com.woowahantechcamp.account_book.data.SQL_GET_HISTORY_BY_ID
-import com.woowahantechcamp.account_book.data.SQL_SELECT_ALL_HISTORIES
-import com.woowahantechcamp.account_book.data.SQL_SELECT_GROUP_BY_CATEGORY
-import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
-import com.woowahantechcamp.account_book.data.entity.CategoryEntity
-import com.woowahantechcamp.account_book.data.entity.HistoryEntity
-import com.woowahantechcamp.account_book.data.entity.PaymentEntity
-import com.woowahantechcamp.account_book.data.entity.StatisticEntity
+import com.woowahantechcamp.account_book.data.*
+import com.woowahantechcamp.account_book.data.entity.*
 import com.woowahantechcamp.account_book.util.query
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -333,6 +327,28 @@ class AccountBookDataSource @Inject constructor(
                         val sum = getLong(3)
 
                         items.add(StatisticEntity(categoryId, categoryTitle, color, sum))
+                    }
+                }
+                cursor.close()
+
+                items
+            }
+        }
+
+    suspend fun getSumOfIncomeAndExpenseForDate(startDate: String, endDate: String) =
+        withContext(ioDispatcher) {
+            dbHelper.readableDatabase.run {
+                val cursor = rawQuery(SQL_GET_SUM_GROUP_BY_DATE, arrayOf(startDate, endDate))
+
+                val items = mutableListOf<CalendarEntity>()
+
+                with(cursor) {
+                    while (moveToNext()) {
+                        val date = getString(0)
+                        val value = getLong(1)
+                        val type = getInt(2)
+
+                        items.add(CalendarEntity(date, value, type))
                     }
                 }
                 cursor.close()
