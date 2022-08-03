@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.provider.BaseColumns
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
+import com.woowahantechcamp.account_book.data.SQL_GET_HISTORY_BY_ID
 import com.woowahantechcamp.account_book.data.SQL_SELECT_ALL_HISTORIES
 import com.woowahantechcamp.account_book.data.SQL_SELECT_GROUP_BY_CATEGORY
 import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
@@ -181,6 +182,33 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
+    suspend fun getHistoryById(id: Int): HistoryEntity = withContext(ioDispatcher) {
+        dbHelper.readableDatabase.run {
+            val cursor = rawQuery(SQL_GET_HISTORY_BY_ID, arrayOf("$id"))
+
+            lateinit var item: HistoryEntity
+            with(cursor) {
+                while (moveToNext()) {
+                    item = HistoryEntity(
+                        id = getInt(getColumnIndexOrThrow(BaseColumns._ID)),
+                        date = getString(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_DATE)),
+                        type = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_TYPE)),
+                        content = getString(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_CONTENT)),
+                        amount = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_AMOUNT)),
+                        paymentId = getIntOrNull(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
+                        paymentTitle = getStringOrNull(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
+                        categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
+                        categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
+                        color = getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                    )
+                }
+            }
+            cursor.close()
+
+            item
+        }
+    }
+
     suspend fun getAllHistory(startDate: String, endDate: String): List<HistoryEntity> =
         withContext(ioDispatcher) {
             dbHelper.readableDatabase.run {
@@ -289,26 +317,27 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun getSumOfExpenseCategory(startDate: String, endDate: String) = withContext(ioDispatcher) {
-        dbHelper.readableDatabase.run {
-            execSQL(SQL_SET_PRAGMA)
+    suspend fun getSumOfExpenseCategory(startDate: String, endDate: String) =
+        withContext(ioDispatcher) {
+            dbHelper.readableDatabase.run {
+                execSQL(SQL_SET_PRAGMA)
 
-            val cursor = rawQuery(SQL_SELECT_GROUP_BY_CATEGORY, arrayOf(startDate, endDate))
+                val cursor = rawQuery(SQL_SELECT_GROUP_BY_CATEGORY, arrayOf(startDate, endDate))
 
-            val items = mutableListOf<StatisticEntity>()
-            with(cursor) {
-                while (moveToNext()) {
-                    val categoryId = getInt(0)
-                    val categoryTitle = getString(1)
-                    val color = getLong(2)
-                    val sum = getLong(3)
+                val items = mutableListOf<StatisticEntity>()
+                with(cursor) {
+                    while (moveToNext()) {
+                        val categoryId = getInt(0)
+                        val categoryTitle = getString(1)
+                        val color = getLong(2)
+                        val sum = getLong(3)
 
-                    items.add(StatisticEntity(categoryId, categoryTitle, color, sum))
+                        items.add(StatisticEntity(categoryId, categoryTitle, color, sum))
+                    }
                 }
-            }
-            cursor.close()
+                cursor.close()
 
-            items
+                items
+            }
         }
-    }
 }
