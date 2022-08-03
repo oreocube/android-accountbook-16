@@ -9,6 +9,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,8 +33,11 @@ fun GraphScreen(
 ) {
     val year = mainViewModel.currentDate.value.year
     val month = mainViewModel.currentDate.value.monthValue
+    val isDatePickerDialogVisible = remember { mutableStateOf(false) }
 
-    viewModel.fetchData(year, month)
+    LaunchedEffect(key1 = year, key2 = month){
+        viewModel.fetchData(year, month)
+    }
 
     val list = viewModel.statistics.value
     val sumOfExpense = list.sumOf { it.sum }
@@ -41,6 +47,7 @@ fun GraphScreen(
             TopAppBarWithMonth(
                 year = year,
                 month = month,
+                onDateClick = { isDatePickerDialogVisible.value = true },
                 onPrevMonthClick = {
                     mainViewModel.moveToPrevMonth()
                     viewModel.fetchData(
@@ -58,6 +65,18 @@ fun GraphScreen(
             )
         }
     ) {
+        if (isDatePickerDialogVisible.value) {
+            DatePickerDialog(
+                year = year,
+                month = month,
+                onDateChanged = { newYear, newMonth ->
+                    mainViewModel.setDate(newYear, newMonth)
+                    isDatePickerDialogVisible.value = false
+                },
+                onDismissRequest = { isDatePickerDialogVisible.value = false }
+            )
+        }
+
         Column(modifier = Modifier.fillMaxSize()) {
             GraphHeader(sumOfExpense = sumOfExpense)
             DividerPurple40()

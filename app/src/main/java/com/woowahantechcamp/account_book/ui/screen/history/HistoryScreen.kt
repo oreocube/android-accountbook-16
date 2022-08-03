@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,10 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woowahantechcamp.account_book.R
-import com.woowahantechcamp.account_book.ui.component.CategoryTag
-import com.woowahantechcamp.account_book.ui.component.FilterButton
-import com.woowahantechcamp.account_book.ui.component.TopAppBarForEditMode
-import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
+import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
@@ -45,6 +43,8 @@ fun HistoryScreen(
 ) {
     val year = mainViewModel.currentDate.value.year
     val month = mainViewModel.currentDate.value.monthValue
+
+    val isDatePickerDialogVisible = remember { mutableStateOf(false) }
 
     viewModel.fetchData(year, month)
 
@@ -80,6 +80,7 @@ fun HistoryScreen(
                 TopAppBarWithMonth(
                     year = year,
                     month = month,
+                    onDateClick = { isDatePickerDialogVisible.value = true },
                     onPrevMonthClick = {
                         mainViewModel.moveToPrevMonth()
                         viewModel.fetchData(
@@ -116,6 +117,18 @@ fun HistoryScreen(
             }
         }
     ) {
+        if (isDatePickerDialogVisible.value) {
+            DatePickerDialog(
+                year = year,
+                month = month,
+                onDateChanged = { newYear, newMonth ->
+                    mainViewModel.setDate(newYear, newMonth)
+                    isDatePickerDialogVisible.value = false
+                },
+                onDismissRequest = { isDatePickerDialogVisible.value = false }
+            )
+        }
+
         Column {
             FilterButton(
                 enabled = isEditMode.not(),
