@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.screen.calendar.CalendarScreen
 import com.woowahantechcamp.account_book.ui.screen.graph.GraphScreen
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryDetail
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
@@ -72,7 +72,7 @@ fun AccountBookApp(
                     )
                 }
                 composable(route = AccountBookScreen.Calendar.route) {
-                    Text(AccountBookScreen.Calendar.route)
+                    CalendarScreen(mainViewModel = mainViewModel)
                 }
                 composable(route = AccountBookScreen.Graph.route) {
                     GraphScreen(mainViewModel = mainViewModel)
