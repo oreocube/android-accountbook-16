@@ -85,6 +85,29 @@ class AccountBookRepository @Inject constructor(
         }
     }
 
+    suspend fun getHistoryById(id: Int): Result<HistoryModel> {
+        return try {
+            val result = dataSource.getHistoryById(id)
+
+            Result.Success(
+                HistoryModel(
+                    id = result.id,
+                    date = result.date,
+                    type = if (result.type == 1) Type.INCOME else Type.EXPENSES,
+                    title = result.content ?: "",
+                    amount = result.amount,
+                    paymentId = result.paymentId,
+                    payment = result.paymentTitle,
+                    categoryId = result.categoryId,
+                    category = result.categoryTitle,
+                    color = Color(result.color)
+                )
+            )
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "exception occur")
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getAllHistories(year: Int, month: Int): Result<List<HistoryModel>> {
         val startDate = YearMonth.of(year, month).atDay(1).toString()

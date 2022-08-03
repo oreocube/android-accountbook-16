@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.setting.SettingType
@@ -23,13 +25,49 @@ import com.woowahantechcamp.account_book.util.toLocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryDetail(
-    viewModel: HistoryViewModel,
+    viewModel: AddEditHistoryViewModel = hiltViewModel(),
     type: Type = Type.INCOME,
     id: Int = -1,
     onSettingAddClick: (SettingType) -> Unit,
     onUpPressed: () -> Unit,
     onSaved: () -> Unit
 ) {
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getAllCategoryItem()
+        viewModel.getAllPaymentItem()
+
+        if (id > 0) {
+            viewModel.setType(type)
+            viewModel.getHistoryItem(id)
+        }
+    }
+
+    val selectedType = viewModel.type.value
+
+    val date = viewModel.date.value.toLocalDate() ?: now
+    val amount = viewModel.amount.value
+    val content = viewModel.content.value
+
+    val calendarVisible = rememberSaveable { mutableStateOf(false) }
+
+    val paymentId = viewModel.paymentId.value
+    val payment = viewModel.paymentName.value
+    val payments = viewModel.paymentMethod.value
+
+    val categoryId = viewModel.categoryId.value
+    val category = viewModel.categoryName.value
+    val categories = when (selectedType) {
+        Type.INCOME -> viewModel.incomeCategory.value
+        Type.EXPENSES -> viewModel.expenseCategory.value
+    }
+
+    val buttonEnable = if (selectedType == Type.INCOME) {
+        (amount != 0) && (categoryId != -1)
+    } else {
+        (amount != 0) && (paymentId != -1) && (categoryId != -1)
+    }
+
     Scaffold(
         topBar = {
             TopAppBarWithUpButton(
@@ -39,38 +77,10 @@ fun HistoryDetail(
             }
         }
     ) {
-        val selectedType = rememberSaveable { mutableStateOf(type) }
-
-        val passedData = if (id > 0) viewModel.getHistoryItem(id) else null
-
-        val date = rememberSaveable { mutableStateOf(passedData?.date?.toLocalDate() ?: now) }
-        val amount = rememberSaveable { mutableStateOf(passedData?.amount ?: 0) }
-        val content = rememberSaveable { mutableStateOf(passedData?.title ?: "") }
-
-        val calendarVisible = rememberSaveable { mutableStateOf(false) }
-
-        val paymentId = rememberSaveable { mutableStateOf(passedData?.paymentId ?: -1) }
-        val payment = rememberSaveable { mutableStateOf(passedData?.payment ?: "") }
-
-        val payments = viewModel.paymentMethod.value
-
-        val categoryId = rememberSaveable { mutableStateOf(passedData?.categoryId ?: -1) }
-        val category = rememberSaveable { mutableStateOf(passedData?.category ?: "") }
-
-        val categories = when (selectedType.value) {
-            Type.INCOME -> viewModel.incomeCategory.value
-            Type.EXPENSES -> viewModel.expenseCategory.value
-        }
-
-        val buttonEnable = if (selectedType.value == Type.INCOME) {
-            (amount.value != 0) && (categoryId.value != -1)
-        } else {
-            (amount.value != 0) && (paymentId.value != -1) && (categoryId.value != -1)
-        }
 
         if (calendarVisible.value) {
             CalendarDialog(
-                onDateChanged = { date.value = it },
+                onDateChanged = { viewModel.setDate(it.toString()) },
                 onDismissRequest = { calendarVisible.value = false }
             )
         }
@@ -82,28 +92,29 @@ fun HistoryDetail(
                     .padding(horizontal = 16.dp)
             ) {
                 SwitchButton(
-                    currentType = selectedType.value ?: Type.INCOME,
+                    currentType = selectedType ?: Type.INCOME,
                     modifier = Modifier.padding(16.dp),
-                    onClick = { selectedType.value = it }
+                    onClick = { viewModel.setType(it) }
                 )
                 InputField(title = "일자") {
-                    DateInputField(date = date.value, modifier = Modifier.clickable {
-                        calendarVisible.value = true
-                    })
+                    DateInputField(
+                        date = date,
+                        modifier = Modifier.clickable {
+                            calendarVisible.value = true
+                        })
                 }
                 InputField(title = "금액") {
-                    AmountTextInputField(amount.value) {
-                        amount.value = it
+                    AmountTextInputField(amount) {
+                        viewModel.setAmount(it)
                     }
                 }
-                if (selectedType.value == Type.EXPENSES) {
+                if (selectedType == Type.EXPENSES) {
                     InputField(title = "결제수단") {
                         SelectionField(
-                            displayText = payment.value,
+                            displayText = payment,
                             list = payments ?: listOf(),
                             onItemSelected = {
-                                paymentId.value = it.id
-                                payment.value = it.title
+                                viewModel.setPayment(it.id, it.title)
                             },
                             onAddSelected = {
                                 onSettingAddClick(SettingType.PAYMENT)
@@ -113,15 +124,14 @@ fun HistoryDetail(
                 }
                 InputField(title = "분류") {
                     SelectionField(
-                        displayText = category.value,
+                        displayText = category,
                         list = categories ?: listOf(),
                         onItemSelected = {
-                            categoryId.value = it.id
-                            category.value = it.title
+                            viewModel.setCategory(it.id, it.title)
                         },
                         onAddSelected = {
                             onSettingAddClick(
-                                if (selectedType.value == Type.INCOME) SettingType.INCOME
+                                if (selectedType == Type.INCOME) SettingType.INCOME
                                 else SettingType.EXPENSE
                             )
                         }
@@ -129,8 +139,8 @@ fun HistoryDetail(
                 }
 
                 InputField(title = "내용") {
-                    PlainTextInputField(content.value) {
-                        content.value = it
+                    PlainTextInputField(content) {
+                        viewModel.setContent(it)
                     }
                 }
             }
@@ -140,15 +150,7 @@ fun HistoryDetail(
                 title = if (id == -1) "등록하기" else "수정하기",
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
-                viewModel.saveHistoryItem(
-                    id = id,
-                    type = selectedType.value,
-                    date = date.value.toString(),
-                    amount = amount.value,
-                    paymentId = paymentId.value,
-                    categoryId = categoryId.value,
-                    content = content.value
-                )
+                viewModel.saveHistoryItem(id)
                 onSaved()
             }
         }
