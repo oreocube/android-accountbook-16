@@ -14,7 +14,7 @@ fun SQLiteDatabase.query(
     order: String = BaseColumns._ID
 ): Cursor = this.query(tableName, projection, selection, selectionArgs, null, null, order)
 
-fun Int.toCurrency(): String {
+fun Number.toCurrency(): String {
     val formatter = DecimalFormat("#,###") as NumberFormat
     return formatter.format(this)
 }

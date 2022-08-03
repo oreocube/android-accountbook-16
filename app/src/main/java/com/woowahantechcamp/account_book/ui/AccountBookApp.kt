@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.woowahantechcamp.account_book.ui.model.Type
+import com.woowahantechcamp.account_book.ui.screen.graph.GraphScreen
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryDetail
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryScreen
 import com.woowahantechcamp.account_book.ui.screen.history.HistoryViewModel
@@ -71,7 +72,7 @@ fun AccountBookApp(
                     Text(AccountBookScreen.Calendar.route)
                 }
                 composable(route = AccountBookScreen.Graph.route) {
-                    Text(AccountBookScreen.Graph.route)
+                    GraphScreen()
                 }
                 composable(route = AccountBookScreen.Setting.route) {
                     SettingScreen(
