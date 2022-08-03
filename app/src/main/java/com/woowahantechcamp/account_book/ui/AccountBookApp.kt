@@ -129,7 +129,6 @@ fun AccountBookApp(
                     val type = backStackEntry.arguments?.get("type") as Type
 
                     HistoryDetail(
-                        viewModel = historyViewModel,
                         type = type,
                         onSettingAddClick = {
                             navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
@@ -149,7 +148,6 @@ fun AccountBookApp(
                     val id = backStackEntry.arguments?.get("id") as Int
 
                     HistoryDetail(
-                        viewModel = historyViewModel,
                         type = type,
                         id = id,
                         onSettingAddClick = {
