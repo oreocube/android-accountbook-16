@@ -30,4 +30,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _currentDate.value = prevMonth
         }
     }
+
+    fun setDate(year: Int, month: Int) {
+        _currentDate.value = LocalDate.of(year, month, 1)
+    }
 }

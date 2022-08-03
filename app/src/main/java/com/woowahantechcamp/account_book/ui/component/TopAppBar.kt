@@ -53,6 +53,7 @@ fun TopAppBarWithUpButton(
 fun TopAppBarWithMonth(
     year: Int,
     month: Int,
+    onDateClick: () -> Unit,
     onPrevMonthClick: () -> Unit,
     onNextMonthClick: () -> Unit
 ) {
@@ -69,13 +70,17 @@ fun TopAppBarWithMonth(
                     tint = MaterialTheme.colors.primary
                 )
             }
-            Text(
-                text = "${year}년 ${month}월",
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-                color = MaterialTheme.colors.primary
-            )
+            TextButton(
+                onClick = { onDateClick() },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "${year}년 ${month}월",
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colors.primary
+                )
+            }
             IconButton(onClick = { onNextMonthClick() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_right),
