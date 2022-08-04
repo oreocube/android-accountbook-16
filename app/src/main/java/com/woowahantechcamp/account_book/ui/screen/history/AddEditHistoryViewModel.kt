@@ -38,6 +38,7 @@ class AddEditHistoryViewModel @Inject constructor(
     fun setType(type: Type) {
         _type.value = type
         _paymentId.value = -1
+        paymentName.value = ""
         _categoryId.value = -1
         _categoryName.value = ""
     }
@@ -98,7 +99,11 @@ class AddEditHistoryViewModel @Inject constructor(
                 _categoryId.value = history.categoryId
                 _categoryName.value = history.category
                 _content.value = history.title
-                if (_type.value == Type.EXPENSES) _paymentId.value = history.paymentId!!
+
+                if (_type.value == Type.EXPENSES) {
+                    _paymentId.value = history.paymentId!!
+                    _paymentName.value = history.payment!!
+                }
             }
         }
     }

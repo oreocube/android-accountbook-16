@@ -37,10 +37,8 @@ fun HistoryDetail(
         viewModel.getAllCategoryItem()
         viewModel.getAllPaymentItem()
 
-        if (id > 0) {
-            viewModel.setType(type)
-            viewModel.getHistoryItem(id)
-        }
+        if (type == Type.EXPENSES) viewModel.setType(type)
+        if (id > 0) viewModel.getHistoryItem(id)
     }
 
     val selectedType = viewModel.type.value
