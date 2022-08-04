@@ -39,7 +39,7 @@ class AccountBookDataSource @Inject constructor(
                     val title =
                         getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE))
                     val color =
-                        getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                        getInt(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
 
                     items.add(CategoryEntity(id, type, title, color))
                 }
@@ -50,7 +50,7 @@ class AccountBookDataSource @Inject constructor(
         }
     }
 
-    suspend fun insertCategory(type: Int, title: String, color: Long): Long =
+    suspend fun insertCategory(type: Int, title: String, color: Int): Long =
         withContext(ioDispatcher) {
             dbHelper.writableDatabase.run {
                 val values = ContentValues().apply {
@@ -66,7 +66,7 @@ class AccountBookDataSource @Inject constructor(
     suspend fun updateCategory(
         categoryId: Int,
         title: String?,
-        color: Long?
+        color: Int?
     ): Int = withContext(ioDispatcher) {
         dbHelper.writableDatabase.run {
             val values = ContentValues().apply {
@@ -193,7 +193,7 @@ class AccountBookDataSource @Inject constructor(
                         paymentTitle = getStringOrNull(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
                         categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
                         categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
-                        color = getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                        color = getInt(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
                     )
                 }
             }
@@ -222,7 +222,7 @@ class AccountBookDataSource @Inject constructor(
                                 paymentTitle = getStringOrNull(getColumnIndexOrThrow(PaymentEntry.COLUMN_NAME_TITLE)),
                                 categoryId = getInt(getColumnIndexOrThrow(HistoryEntry.COLUMN_NAME_PAYMENT_ID)),
                                 categoryTitle = getString(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_TITLE)),
-                                color = getLong(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
+                                color = getInt(getColumnIndexOrThrow(CategoryEntry.COLUMN_NAME_COLOR))
                             )
                         )
                     }
@@ -323,7 +323,7 @@ class AccountBookDataSource @Inject constructor(
                     while (moveToNext()) {
                         val categoryId = getInt(0)
                         val categoryTitle = getString(1)
-                        val color = getLong(2)
+                        val color = getInt(2)
                         val sum = getLong(3)
 
                         items.add(StatisticEntity(categoryId, categoryTitle, color, sum))

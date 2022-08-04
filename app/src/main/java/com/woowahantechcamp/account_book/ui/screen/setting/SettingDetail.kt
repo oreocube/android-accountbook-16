@@ -11,13 +11,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.woowahantechcamp.account_book.ui.component.*
+import com.woowahantechcamp.account_book.ui.model.CategoryModel
 import com.woowahantechcamp.account_book.util.expenseColorList
 import com.woowahantechcamp.account_book.util.incomeColorList
 
 @Composable
 fun SettingDetail(
     viewModel: SettingViewModel,
-    title: String,
     type: SettingType,
     id: Int = -1,
     onUpPressed: () -> Unit,
@@ -28,10 +28,25 @@ fun SettingDetail(
         else viewModel.getCategoryItem(type, id)
     } else null
 
+    val title = if (id < 0) type.addTitle else type.editTitle
+
     val text = rememberSaveable { mutableStateOf(passedData?.title ?: "") }
-    val selectedColorIndex = rememberSaveable { mutableStateOf(0) }
     val colorList = if (type == SettingType.INCOME) incomeColorList
     else expenseColorList
+
+    val passedDataColorIndex = passedData?.let {
+        when (type) {
+            SettingType.PAYMENT -> 0
+            SettingType.INCOME -> {
+                (it as CategoryModel).color
+            }
+            SettingType.EXPENSE -> {
+                (it as CategoryModel).color
+            }
+        }
+    } ?: 0
+
+    val selectedColorIndex = rememberSaveable { mutableStateOf(passedDataColorIndex) }
 
     Scaffold(
         topBar = {
@@ -63,13 +78,18 @@ fun SettingDetail(
             LargeButton(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 enabled = text.value.isNotEmpty(),
-                title = if (id == -1) "등록하기" else "수정하기"
+                title = if (id < 0) "등록하기" else "수정하기"
             ) {
                 if (type == SettingType.PAYMENT) {
                     viewModel.savePaymentItem(id, text.value)
                     onSaved()
                 } else {
-                    viewModel.saveCategoryItem(id, type, text.value, colorList[selectedColorIndex.value])
+                    viewModel.saveCategoryItem(
+                        id,
+                        type,
+                        text.value,
+                        selectedColorIndex.value
+                    )
                     onSaved()
                 }
             }

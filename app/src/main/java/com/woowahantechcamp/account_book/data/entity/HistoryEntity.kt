@@ -10,5 +10,5 @@ data class HistoryEntity(
     val paymentTitle: String?,
     val categoryId: Int,
     val categoryTitle: String,
-    val color: Long
+    val color: Int
 )

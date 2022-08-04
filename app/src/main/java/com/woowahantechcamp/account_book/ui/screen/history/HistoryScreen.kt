@@ -29,9 +29,7 @@ import com.woowahantechcamp.account_book.ui.model.HistoryModel
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.theme.*
-import com.woowahantechcamp.account_book.util.toCurrency
-import com.woowahantechcamp.account_book.util.toDate
-import com.woowahantechcamp.account_book.util.toFormattedDateString
+import com.woowahantechcamp.account_book.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -279,7 +277,7 @@ fun HistoryItem(
                 CategoryTag(
                     modifier = Modifier.align(Alignment.CenterStart),
                     title = item.category,
-                    color = item.color
+                    color = if (item.type == Type.INCOME) incomeColorList[item.color] else expenseColorList[item.color]
                 )
                 if (item.type == Type.EXPENSES) {
                     Text(

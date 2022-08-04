@@ -10,7 +10,6 @@ import com.woowahantechcamp.account_book.data.SQL_CREATE_HISTORY_TABLE
 import com.woowahantechcamp.account_book.data.SQL_CREATE_PAYMENT_TABLE
 import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
-import com.woowahantechcamp.account_book.ui.theme.Olive1
 
 class AccountBookDBHelper(
     context: Context
@@ -47,16 +46,16 @@ class AccountBookDBHelper(
         const val DATABASE_NAME = "AccountBook.db"
 
         val initialData = listOf(
-            CategoryEntity(0, 1, "월급", 0xFF9BD182),
-            CategoryEntity(1, 1, "용돈", 0xFFEDCF65),
-            CategoryEntity(2, 1, "기타", 0xFFE29C4D),
-            CategoryEntity(3, 2, "교통", 0xFF94D3CC),
-            CategoryEntity(4, 2, "문화/여가", 0xFFD092E2),
-            CategoryEntity(5, 2, "미분류", 0xFF817DCE),
-            CategoryEntity(6, 2, "생활", 0xFF4A6CC3),
-            CategoryEntity(7, 2, "쇼핑/뷰티", 0xFF4CB8B8),
-            CategoryEntity(8, 2, "식비", 0xFF4CA1DE),
-            CategoryEntity(9, 2, "의료/건강", 0xFF6ED5EB)
+            CategoryEntity(0, 1, "월급", 0),
+            CategoryEntity(1, 1, "용돈", 5),
+            CategoryEntity(2, 1, "기타", 8),
+            CategoryEntity(3, 2, "교통", 6),
+            CategoryEntity(4, 2, "문화/여가", 14),
+            CategoryEntity(5, 2, "미분류", 11),
+            CategoryEntity(6, 2, "생활", 0),
+            CategoryEntity(7, 2, "쇼핑/뷰티", 7),
+            CategoryEntity(8, 2, "식비", 2),
+            CategoryEntity(9, 2, "의료/건강", 4)
         )
     }
 }

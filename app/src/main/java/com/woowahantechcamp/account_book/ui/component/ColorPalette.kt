@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woowahantechcamp.account_book.ui.screen.setting.Header
-import com.woowahantechcamp.account_book.ui.theme.*
+import com.woowahantechcamp.account_book.ui.theme.AccountbookTheme
 import com.woowahantechcamp.account_book.util.expenseColorList
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -23,7 +23,7 @@ import com.woowahantechcamp.account_book.util.expenseColorList
 fun ColorPalette(
     modifier: Modifier,
     selectedIndex: Int,
-    colorList: List<Long>,
+    colorList: List<Color>,
     onSelectChanged: (Int) -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -47,7 +47,7 @@ fun ColorPalette(
                             modifier = Modifier
                                 .size(if (index == selectedIndex) 24.dp else 16.dp)
                                 .align(Alignment.Center)
-                                .background(color = Color(color))
+                                .background(color = color)
                                 .clickable { onSelectChanged(index) }) {
                         }
                     }
