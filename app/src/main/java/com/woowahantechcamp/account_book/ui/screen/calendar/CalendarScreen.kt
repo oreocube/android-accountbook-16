@@ -95,7 +95,7 @@ fun CalendarScreen(
                     amount = if (expense > 0) "-${expense.toCurrency()}" else expense.toCurrency(),
                     color = Red
                 )
-                SummaryItem(title = "총합", amount = (income + expense).toCurrency(), color = Purple)
+                SummaryItem(title = "총합", amount = (income - expense).toCurrency(), color = Purple)
             }
         }
     }

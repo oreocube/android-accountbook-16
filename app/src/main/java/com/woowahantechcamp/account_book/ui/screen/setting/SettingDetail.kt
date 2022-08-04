@@ -23,7 +23,7 @@ fun SettingDetail(
     onUpPressed: () -> Unit,
     onSaved: () -> Unit
 ) {
-    val passedData = if (id > 0) {
+    val passedData = if (id != -1) {
         if (type == SettingType.PAYMENT) viewModel.getPaymentItem(id)
         else viewModel.getCategoryItem(type, id)
     } else null

@@ -27,7 +27,7 @@ import com.woowahantechcamp.account_book.ui.theme.White
 @Composable
 fun SwitchButton(
     currentType: Type,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onClick: (Type) -> Unit
 ) {
     Surface(
