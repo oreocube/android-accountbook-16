@@ -2,9 +2,8 @@ package com.woowahantechcamp.account_book.ui.screen.history
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woowahantechcamp.account_book.data.repository.AccountBookRepository
@@ -23,14 +22,14 @@ class AddEditHistoryViewModel @Inject constructor(
     private val repository: AccountBookRepository
 ) : ViewModel() {
 
-    private val _incomeCategory = MutableLiveData<List<CategoryModel>>()
-    val incomeCategory: LiveData<List<CategoryModel>> = _incomeCategory
+    private val _incomeCategory = mutableStateOf<List<CategoryModel>>(listOf())
+    val incomeCategory: State<List<CategoryModel>> = _incomeCategory
 
-    private val _expenseCategory = MutableLiveData<List<CategoryModel>>()
-    val expenseCategory: LiveData<List<CategoryModel>> = _expenseCategory
+    private val _expenseCategory = mutableStateOf<List<CategoryModel>>(listOf())
+    val expenseCategory: State<List<CategoryModel>> = _expenseCategory
 
-    private val _paymentMethod = MutableLiveData<List<PaymentModel>>()
-    val paymentMethod: LiveData<List<PaymentModel>> = _paymentMethod
+    private val _paymentMethod = mutableStateOf<List<PaymentModel>>(listOf())
+    val paymentMethod: State<List<PaymentModel>> = _paymentMethod
 
     private val _type = mutableStateOf(Type.INCOME)
     val type = _type
@@ -141,7 +140,7 @@ class AddEditHistoryViewModel @Inject constructor(
                     content = content.value,
                     amount = amount.value,
                     paymentId = paymentId.value,
-                    categoryId = categoryId.value
+                    categoryId = if (categoryId.value < 0) type.value.defaultCategoryId else categoryId.value
                 )
             } else {
                 repository.insertHistory(
@@ -149,7 +148,7 @@ class AddEditHistoryViewModel @Inject constructor(
                     date = date.value,
                     amount = amount.value,
                     paymentId = paymentId.value,
-                    categoryId = categoryId.value,
+                    categoryId = if (categoryId.value < 0) type.value.defaultCategoryId else categoryId.value,
                     content = content.value
                 )
             }

@@ -61,9 +61,9 @@ fun HistoryDetail(
     }
 
     val buttonEnable = if (selectedType == Type.INCOME) {
-        (amount != 0) && (categoryId != -1)
+        (amount != 0)
     } else {
-        (amount != 0) && (paymentId != -1) && (categoryId != -1)
+        (amount != 0) && (paymentId != -1)
     }
 
     Scaffold(
