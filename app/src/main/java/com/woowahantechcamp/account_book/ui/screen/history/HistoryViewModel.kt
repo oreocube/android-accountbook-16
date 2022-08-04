@@ -5,8 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woowahantechcamp.account_book.data.repository.AccountBookRepository
@@ -25,17 +23,17 @@ class HistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _year = mutableStateOf(LocalDate.now().year)
-    fun setYear(year: Int) {
+    private fun setYear(year: Int) {
         _year.value = year
     }
 
     private val _month = mutableStateOf(LocalDate.now().monthValue)
-    fun setMonth(month: Int) {
+    private fun setMonth(month: Int) {
         _month.value = month
     }
 
-    private val _historyAll = MutableLiveData<List<HistoryModel>>()
-    val historyAll: LiveData<List<HistoryModel>> = _historyAll
+    private val _historyAll = mutableStateOf<List<HistoryModel>>(listOf())
+    val historyAll: MutableState<List<HistoryModel>> = _historyAll
 
     private val _sumOfIncome = mutableStateOf(0)
     val sumOfIncome: MutableState<Int>
@@ -61,29 +59,35 @@ class HistoryViewModel @Inject constructor(
         _selectedItems.clear()
     }
 
-    fun fetchData(year: Int, month: Int) {
+    fun fetchData(year: Int, month: Int, onFailure: (String) -> Unit) {
         setYear(year)
         setMonth(month)
         viewModelScope.launch {
-            val result = repository.getAllHistories(year, month)
-
-            if (result is Result.Success) {
-                _historyAll.value = result.data
-                _sumOfIncome.value =
-                    result.data.filter { it.type == Type.INCOME }.sumOf { it.amount }
-                _sumOfExpense.value =
-                    result.data.filter { it.type == Type.EXPENSES }.sumOf { it.amount }
+            when (val result = repository.getAllHistories(year, month)) {
+                is Result.Success -> {
+                    _historyAll.value = result.data
+                    _sumOfIncome.value =
+                        result.data.filter { it.type == Type.INCOME }.sumOf { it.amount }
+                    _sumOfExpense.value =
+                        result.data.filter { it.type == Type.EXPENSES }.sumOf { it.amount }
+                }
+                is Result.Error -> {
+                    onFailure("데이터를 불러오지 못했습니다.")
+                }
             }
         }
     }
 
-    fun deleteAllSelectedItems() {
+    fun deleteAllSelectedItems(onFailure: (String) -> Unit) {
         viewModelScope.launch {
-            val result = repository.deleteHistoryItems(_selectedItems)
-
-            if (result is Result.Success) {
-                _selectedItems.clear()
-                fetchData(_year.value, _month.value)
+            when (repository.deleteHistoryItems(_selectedItems)) {
+                is Result.Success -> {
+                    _selectedItems.clear()
+                    fetchData(_year.value, _month.value) { onFailure("데이터를 불러오지 못했습니다.") }
+                }
+                is Result.Error -> {
+                    onFailure("삭제 실패")
+                }
             }
         }
     }
