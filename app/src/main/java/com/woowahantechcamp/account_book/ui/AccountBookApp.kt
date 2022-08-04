@@ -100,7 +100,6 @@ fun AccountBookApp(
 
                     SettingDetail(
                         viewModel = settingViewModel,
-                        title = type.addTitle,
                         id = id,
                         type = type,
                         onUpPressed = { navController.navigateUp() },
@@ -117,7 +116,6 @@ fun AccountBookApp(
 
                     SettingDetail(
                         viewModel = settingViewModel,
-                        title = type.addTitle,
                         type = type,
                         onUpPressed = { navController.navigateUp() },
                         onSaved = { navController.navigateUp() }
