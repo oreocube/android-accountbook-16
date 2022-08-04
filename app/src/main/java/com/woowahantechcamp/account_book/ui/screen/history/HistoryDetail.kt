@@ -91,7 +91,7 @@ fun HistoryDetail(
             ) {
                 SwitchButton(
                     currentType = selectedType ?: Type.INCOME,
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(vertical = 16.dp),
                     onClick = { viewModel.setType(it) }
                 )
                 InputField(title = "일자") {
