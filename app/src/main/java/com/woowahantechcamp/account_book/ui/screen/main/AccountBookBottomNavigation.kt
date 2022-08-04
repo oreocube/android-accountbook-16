@@ -36,7 +36,7 @@ fun AccountBookBottomNavigation(
                 },
                 selectedContentColor = MaterialTheme.colors.onPrimary,
                 unselectedContentColor = White50,
-                selected = currentScreen == item.route,
+                selected = currentScreen?.startsWith(item.route) ?: false,
                 onClick = { onTabSelected(item) }
             )
         }
