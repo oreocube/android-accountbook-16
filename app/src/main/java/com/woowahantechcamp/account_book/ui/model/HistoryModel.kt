@@ -1,7 +1,5 @@
 package com.woowahantechcamp.account_book.ui.model
 
-import androidx.compose.ui.graphics.Color
-
 enum class Type(val id: Int, val title: String) {
     INCOME(1, "수입"),
     EXPENSES(2, "지출")
@@ -17,5 +15,5 @@ data class HistoryModel(
     val payment: String?,
     val categoryId: Int,
     val category: String,
-    val color: Color
+    val color: Int
 ) : Model

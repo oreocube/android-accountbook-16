@@ -25,6 +25,8 @@ import com.woowahantechcamp.account_book.ui.model.Model
 import com.woowahantechcamp.account_book.ui.model.PaymentModel
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.theme.LightPurple
+import com.woowahantechcamp.account_book.util.expenseColorList
+import com.woowahantechcamp.account_book.util.incomeColorList
 
 @Composable
 fun SettingScreen(
@@ -152,7 +154,7 @@ fun Body(
                 CategoryTag(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     title = item.title,
-                    color = item.color
+                    color = if (item.type == Type.INCOME) incomeColorList[item.color] else expenseColorList[item.color]
                 )
             }
         }

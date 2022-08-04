@@ -83,8 +83,8 @@ fun AccountBookApp(
                         onItemClicked = { type, id ->
                             navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/$type/$id")
                         },
-                        onAddClick = {
-                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
+                        onAddClick = { type ->
+                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/$type")
                         }
                     )
                 }
@@ -108,7 +108,7 @@ fun AccountBookApp(
                     )
                 }
                 composable(
-                    route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/{type}",
+                    route = "${MainDestinations.SETTING_DETAIL_ROUTE}/{type}",
                     arguments = listOf(navArgument("type") {
                         type = NavType.EnumType(SettingType::class.java)
                     })
@@ -133,8 +133,8 @@ fun AccountBookApp(
 
                     HistoryDetail(
                         type = type,
-                        onSettingAddClick = {
-                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
+                        onSettingAddClick = { type ->
+                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/$type")
                         },
                         onUpPressed = { navController.navigateUp() },
                         onSaved = { navController.navigateUp() }
@@ -153,8 +153,8 @@ fun AccountBookApp(
                     HistoryDetail(
                         type = type,
                         id = id,
-                        onSettingAddClick = {
-                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/add/$it")
+                        onSettingAddClick = { type ->
+                            navController.navigate(route = "${MainDestinations.SETTING_DETAIL_ROUTE}/$type")
                         },
                         onUpPressed = { navController.navigateUp() },
                         onSaved = { navController.navigateUp() }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.woowahantechcamp.account_book.ui.component.*
+import com.woowahantechcamp.account_book.ui.model.CategoryModel
 import com.woowahantechcamp.account_book.util.expenseColorList
 import com.woowahantechcamp.account_book.util.incomeColorList
 
@@ -29,9 +30,22 @@ fun SettingDetail(
     } else null
 
     val text = rememberSaveable { mutableStateOf(passedData?.title ?: "") }
-    val selectedColorIndex = rememberSaveable { mutableStateOf(0) }
     val colorList = if (type == SettingType.INCOME) incomeColorList
     else expenseColorList
+
+    val passedDataColorIndex = passedData?.let {
+        when (type) {
+            SettingType.PAYMENT -> 0
+            SettingType.INCOME -> {
+                (it as CategoryModel).color
+            }
+            SettingType.EXPENSE -> {
+                (it as CategoryModel).color
+            }
+        }
+    } ?: 0
+
+    val selectedColorIndex = rememberSaveable { mutableStateOf(passedDataColorIndex) }
 
     Scaffold(
         topBar = {
@@ -69,7 +83,12 @@ fun SettingDetail(
                     viewModel.savePaymentItem(id, text.value)
                     onSaved()
                 } else {
-                    viewModel.saveCategoryItem(id, type, text.value, colorList[selectedColorIndex.value])
+                    viewModel.saveCategoryItem(
+                        id,
+                        type,
+                        text.value,
+                        selectedColorIndex.value
+                    )
                     onSaved()
                 }
             }

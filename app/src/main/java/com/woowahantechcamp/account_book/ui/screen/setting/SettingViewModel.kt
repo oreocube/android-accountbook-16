@@ -32,7 +32,7 @@ class SettingViewModel @Inject constructor(
         getAllCategoryItem()
     }
 
-    fun saveCategoryItem(id: Int = -1, type: SettingType, title: String, color: Long) {
+    fun saveCategoryItem(id: Int = -1, type: SettingType, title: String, color: Int) {
         viewModelScope.launch {
             val result = if (id == -1) categoryRepository.addCategory(type, title, color)
             else categoryRepository.updateCategory(id, title, color)

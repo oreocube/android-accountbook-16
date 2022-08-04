@@ -13,7 +13,7 @@ import javax.inject.Inject
 class AccountBookRepository @Inject constructor(
     private val dataSource: AccountBookDataSource
 ) {
-    suspend fun addCategory(type: SettingType, title: String, color: Long): Result<Long> {
+    suspend fun addCategory(type: SettingType, title: String, color: Int): Result<Long> {
         return try {
             val typeInt = if (type == SettingType.INCOME) 1 else 2
             val result = dataSource.insertCategory(typeInt, title, color)
@@ -33,7 +33,7 @@ class AccountBookRepository @Inject constructor(
                     id = it.categoryId,
                     type = if (it.type == 1) Type.INCOME else Type.EXPENSES,
                     title = it.title,
-                    color = Color(it.color)
+                    color = it.color
                 )
             })
         } catch (e: Exception) {
@@ -41,7 +41,7 @@ class AccountBookRepository @Inject constructor(
         }
     }
 
-    suspend fun updateCategory(id: Int, title: String, color: Long): Result<Int> {
+    suspend fun updateCategory(id: Int, title: String, color: Int): Result<Int> {
         return try {
             val result = dataSource.updateCategory(id, title, color)
 
@@ -101,7 +101,7 @@ class AccountBookRepository @Inject constructor(
                     payment = result.paymentTitle,
                     categoryId = result.categoryId,
                     category = result.categoryTitle,
-                    color = Color(result.color)
+                    color = result.color
                 )
             )
         } catch (e: Exception) {
@@ -128,7 +128,7 @@ class AccountBookRepository @Inject constructor(
                     payment = it.paymentTitle,
                     categoryId = it.categoryId,
                     category = it.categoryTitle,
-                    color = Color(it.color)
+                    color = it.color
                 )
             })
         } catch (e: Exception) {
