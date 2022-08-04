@@ -97,22 +97,25 @@ fun HistoryScreen(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onAddClick(
-                        // 지출만 체크된 상태가 아닌 경우는 모두 수입 추가
-                        if (!incomeChecked.value && expenseChecked.value) Type.EXPENSES
-                        else Type.INCOME
+            if (isEditMode.not()) {
+                FloatingActionButton(
+                    onClick = {
+                        onAddClick(
+                            // 지출만 체크된 상태가 아닌 경우는 모두 수입 추가
+                            if (!incomeChecked.value && expenseChecked.value) Type.EXPENSES
+                            else Type.INCOME
+                        )
+                    },
+                    backgroundColor = Yellow
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_plus),
+                        contentDescription = "addIcon",
+                        tint = White
                     )
-                },
-                backgroundColor = Yellow
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_plus),
-                    contentDescription = "addIcon",
-                    tint = White
-                )
+                }
             }
+
         }
     ) {
         if (isDatePickerDialogVisible.value) {
