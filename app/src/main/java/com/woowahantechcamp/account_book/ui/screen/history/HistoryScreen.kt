@@ -11,14 +11,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,7 +44,13 @@ fun HistoryScreen(
 
     val isDatePickerDialogVisible = remember { mutableStateOf(false) }
 
-    viewModel.fetchData(year, month)
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = month) {
+        viewModel.fetchData(year, month) {
+            context.showToast(it)
+        }
+    }
 
     val isEditMode = viewModel.selectedItems.isNotEmpty()
 
@@ -53,7 +59,7 @@ fun HistoryScreen(
     val incomeChecked = rememberSaveable { mutableStateOf(true) }
     val expenseChecked = rememberSaveable { mutableStateOf(false) }
 
-    val list: List<HistoryModel> by viewModel.historyAll.observeAsState(listOf())
+    val list = viewModel.historyAll.value
 
     val filteredList = if (incomeChecked.value && expenseChecked.value) list
     else if (incomeChecked.value) list.filter { it.type == Type.INCOME }
@@ -71,7 +77,9 @@ fun HistoryScreen(
                         viewModel.clearSelectedItem()
                     },
                     onDeleteClicked = {
-                        viewModel.deleteAllSelectedItems()
+                        viewModel.deleteAllSelectedItems {
+                            context.showToast(it)
+                        }
                     }
                 )
             } else {
@@ -81,17 +89,9 @@ fun HistoryScreen(
                     onDateClick = { isDatePickerDialogVisible.value = true },
                     onPrevMonthClick = {
                         mainViewModel.moveToPrevMonth()
-                        viewModel.fetchData(
-                            year = mainViewModel.currentDate.value.year,
-                            month = mainViewModel.currentDate.value.monthValue
-                        )
                     },
                     onNextMonthClick = {
                         mainViewModel.moveToNextMonth()
-                        viewModel.fetchData(
-                            year = mainViewModel.currentDate.value.year,
-                            month = mainViewModel.currentDate.value.monthValue
-                        )
                     }
                 )
             }

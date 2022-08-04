@@ -20,12 +20,15 @@ class CalendarViewModel @Inject constructor(
     private val _calendarData = mutableStateOf<List<CalendarEntity>>(listOf())
     val calendarData = _calendarData
 
-    fun fetchData(year: Int, month: Int) {
+    fun fetchData(year: Int, month: Int, onFailure: (String) -> Unit) {
         viewModelScope.launch {
-            val result = repository.getCalendarData(year, month)
-
-            if (result is Result.Success) {
-                _calendarData.value = result.data
+            when (val result = repository.getCalendarData(year, month)) {
+                is Result.Success -> {
+                    _calendarData.value = result.data
+                }
+                is Result.Error -> {
+                    onFailure("데이터를 불러오지 못했습니다.")
+                }
             }
         }
     }
