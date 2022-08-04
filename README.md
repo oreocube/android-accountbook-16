@@ -11,7 +11,7 @@
 - Jetpack Navigation을 사용해보자
 
 ## 데이터베이스
-<img src="https://user-images.githubusercontent.com/78132126/182843943-0b274e15-272e-48ef-b331-2813d48ecdfd.png" width="500px" />
+![image](https://user-images.githubusercontent.com/78132126/182852488-cdcc0ce9-c0e1-4b38-837b-4026e23953b0.png)
 
 ## 스크린샷
 ![image](https://user-images.githubusercontent.com/78132126/182848419-fe46dbb0-0b3d-4acb-8555-2ab1a49447ad.png)
