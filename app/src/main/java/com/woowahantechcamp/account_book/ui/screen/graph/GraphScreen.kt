@@ -77,22 +77,29 @@ fun GraphScreen(
                 onDismissRequest = { isDatePickerDialogVisible.value = false }
             )
         }
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            GraphHeader(sumOfExpense = sumOfExpense)
-            DividerPurple40()
-            Spacer(modifier = Modifier.height(24.dp))
-            AnimatedCircle(
-                values = list,
-                total = sumOfExpense,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            SummaryList(list = list, total = sumOfExpense)
-            DividerPrimary()
+        if (list.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                DataEmptyText(modifier = Modifier.align(Alignment.Center))
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxSize()) {
+                GraphHeader(sumOfExpense = sumOfExpense)
+                DividerPurple40()
+                Spacer(modifier = Modifier.height(24.dp))
+                AnimatedCircle(
+                    values = list,
+                    total = sumOfExpense,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                SummaryList(list = list, total = sumOfExpense)
+                DividerPrimary()
+            }
         }
+
+
     }
 }
 

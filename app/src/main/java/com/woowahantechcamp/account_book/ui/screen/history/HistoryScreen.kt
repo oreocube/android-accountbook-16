@@ -127,7 +127,7 @@ fun HistoryScreen(
             )
         }
 
-        Column {
+        Column(modifier = Modifier.fillMaxSize()) {
             FilterButton(
                 enabled = isEditMode.not(),
                 incomeChecked = incomeChecked.value,
@@ -140,25 +140,33 @@ fun HistoryScreen(
                 },
                 modifier = Modifier.padding(16.dp)
             )
-            HistoryList(
-                selectedItems = selectedItems,
-                editMode = isEditMode,
-                grouped = grouped,
-                onHistoryItemClick = { type, id ->
-                    if (isEditMode) {
-                        if (selectedItems.contains(id)) {
-                            viewModel.removeSelectedItem(id)
-                        } else {
-                            viewModel.addSelectedItem(id)
-                        }
-                    } else {
-                        onHistoryItemClick(type, id)
-                    }
-                },
-                onModeChanged = { id ->
-                    viewModel.addSelectedItem(id)
+
+            if (filteredList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DataEmptyText(modifier = Modifier.align(Alignment.Center))
                 }
-            )
+            } else {
+                HistoryList(
+                    selectedItems = selectedItems,
+                    editMode = isEditMode,
+                    grouped = grouped,
+                    onHistoryItemClick = { type, id ->
+                        if (isEditMode) {
+                            if (selectedItems.contains(id)) {
+                                viewModel.removeSelectedItem(id)
+                            } else {
+                                viewModel.addSelectedItem(id)
+                            }
+                        } else {
+                            onHistoryItemClick(type, id)
+                        }
+                    },
+                    onModeChanged = { id ->
+                        viewModel.addSelectedItem(id)
+                    }
+                )
+            }
+
         }
     }
 }

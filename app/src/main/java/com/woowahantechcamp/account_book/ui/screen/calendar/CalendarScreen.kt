@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woowahantechcamp.account_book.ui.component.DataEmptyText
 import com.woowahantechcamp.account_book.ui.component.DatePickerDialog
 import com.woowahantechcamp.account_book.ui.component.DividerPurple40
 import com.woowahantechcamp.account_book.ui.component.TopAppBarWithMonth
@@ -22,6 +23,7 @@ import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.theme.Blue4
 import com.woowahantechcamp.account_book.ui.theme.Purple
+import com.woowahantechcamp.account_book.ui.theme.Purple40
 import com.woowahantechcamp.account_book.ui.theme.Red
 import com.woowahantechcamp.account_book.util.toCurrency
 
@@ -37,9 +39,9 @@ fun CalendarScreen(
 
     val isDatePickerDialogVisible = remember { mutableStateOf(false) }
 
-    val categoryData = viewModel.calendarData.value
-    val income = categoryData.filter { it.type == Type.INCOME.id }.sumOf { it.value }
-    val expense = categoryData.filter { it.type == Type.EXPENSES.id }.sumOf { it.value }
+    val calendarData = viewModel.calendarData.value
+    val income = calendarData.filter { it.type == Type.INCOME.id }.sumOf { it.value }
+    val expense = calendarData.filter { it.type == Type.EXPENSES.id }.sumOf { it.value }
 
     Scaffold(
         topBar = {
@@ -64,14 +66,31 @@ fun CalendarScreen(
             )
         }
 
-        Column {
-            SummaryItem(title = "수입", amount = income.toCurrency(), color = Blue4)
-            SummaryItem(
-                title = "지출",
-                amount = if (expense > 0) "-${expense.toCurrency()}" else expense.toCurrency(),
-                color = Red
-            )
-            SummaryItem(title = "총합", amount = (income + expense).toCurrency(), color = Purple)
+        if (calendarData.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                DataEmptyText(modifier = Modifier.align(Alignment.Center))
+            }
+        } else {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+                    Text(
+                        text = "<달력>",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Purple40
+                    )
+                }
+                SummaryItem(title = "수입", amount = income.toCurrency(), color = Blue4)
+                SummaryItem(
+                    title = "지출",
+                    amount = if (expense > 0) "-${expense.toCurrency()}" else expense.toCurrency(),
+                    color = Red
+                )
+                SummaryItem(title = "총합", amount = (income + expense).toCurrency(), color = Purple)
+            }
         }
     }
 }
