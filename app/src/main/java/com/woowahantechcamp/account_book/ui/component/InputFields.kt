@@ -167,49 +167,52 @@ fun SelectionField(
         modifier = Modifier.clickable { expended.value = true }
     )
 
-    DropdownMenu(
-        expanded = expended.value,
-        modifier = Modifier
-            .background(color = Color.Transparent)
-            .width(220.dp)
-            .border(
-                1.dp,
-                color = MaterialTheme.colors.primary,
-                shape = RoundedCornerShape(12.dp)
-            ),
-        onDismissRequest = { expended.value = false }
-    ) {
-        list.forEach {
+    MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
+        DropdownMenu(
+            expanded = expended.value,
+            modifier = Modifier
+                .background(color = Color.Transparent)
+                .width(220.dp)
+                .border(
+                    1.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            onDismissRequest = { expended.value = false }
+        ) {
+            list.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        onItemSelected(it)
+                        expended.value = false
+                    },
+                    modifier = Modifier.background(color = Color.Transparent)
+                ) {
+                    Text(text = it.title, fontSize = 12.sp, color = Purple)
+                }
+            }
             DropdownMenuItem(
                 onClick = {
-                    onItemSelected(it)
+                    onAddSelected()
                     expended.value = false
                 },
                 modifier = Modifier.background(color = Color.Transparent)
             ) {
-                Text(text = it.title, fontSize = 12.sp, color = Purple)
-            }
-        }
-        DropdownMenuItem(
-            onClick = {
-                onAddSelected()
-                expended.value = false
-            },
-            modifier = Modifier.background(color = Color.Transparent)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "추가하기",
-                    fontSize = 12.sp,
-                    color = Purple,
-                    modifier = Modifier.weight(1f)
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.ic_plus),
-                    contentDescription = "plus",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "추가하기",
+                        fontSize = 12.sp,
+                        color = Purple,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_plus),
+                        contentDescription = "plus",
+                        colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
+                    )
+                }
             }
         }
     }
+
 }
