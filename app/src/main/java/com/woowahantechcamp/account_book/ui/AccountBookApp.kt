@@ -17,6 +17,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.woowahantechcamp.account_book.ui.DestinationsArgs.ID_ARG
+import com.woowahantechcamp.account_book.ui.DestinationsArgs.TYPE_ARG
+import com.woowahantechcamp.account_book.ui.MainDestinations.HISTORY_DETAIL_ROUTE
+import com.woowahantechcamp.account_book.ui.MainDestinations.SETTING_DETAIL_ROUTE
+import com.woowahantechcamp.account_book.ui.Screens.HISTORY_SCREEN
+import com.woowahantechcamp.account_book.ui.Screens.SETTING_SCREEN
 import com.woowahantechcamp.account_book.ui.model.Type
 import com.woowahantechcamp.account_book.ui.screen.calendar.CalendarScreen
 import com.woowahantechcamp.account_book.ui.screen.graph.GraphScreen
@@ -89,14 +95,14 @@ fun AccountBookApp(
                     )
                 }
                 composable(
-                    route = "${MainDestinations.SETTING_DETAIL_ROUTE}/{type}?id={id}",
+                    route = SETTING_DETAIL_ROUTE,
                     arguments = listOf(
-                        navArgument("type") { type = NavType.EnumType(SettingType::class.java) },
-                        navArgument("id") { type = NavType.IntType; defaultValue = -1 }
+                        navArgument(TYPE_ARG) { type = NavType.EnumType(SettingType::class.java) },
+                        navArgument(ID_ARG) { type = NavType.IntType; defaultValue = -1 }
                     )
                 ) { backStackEntry ->
-                    val type = backStackEntry.arguments?.get("type") as SettingType
-                    val id = backStackEntry.arguments?.getInt("id") ?: -1
+                    val type = backStackEntry.arguments?.get(TYPE_ARG) as SettingType
+                    val id = backStackEntry.arguments?.getInt(ID_ARG) ?: -1
 
                     SettingDetail(
                         viewModel = settingViewModel,
@@ -107,14 +113,14 @@ fun AccountBookApp(
                     )
                 }
                 composable(
-                    route = "${MainDestinations.HISTORY_DETAIL_ROUTE}/{type}?id={id}",
+                    route = HISTORY_DETAIL_ROUTE,
                     arguments = listOf(
-                        navArgument("type") { type = NavType.EnumType(Type::class.java) },
-                        navArgument("id") { type = NavType.IntType; defaultValue = -1 }
+                        navArgument(TYPE_ARG) { type = NavType.EnumType(Type::class.java) },
+                        navArgument(ID_ARG) { type = NavType.IntType; defaultValue = -1 }
                     )
                 ) { backStackEntry ->
-                    val type = backStackEntry.arguments?.get("type") as Type
-                    val id = backStackEntry.arguments?.getInt("id") ?: -1
+                    val type = backStackEntry.arguments?.get(TYPE_ARG) as Type
+                    val id = backStackEntry.arguments?.getInt(ID_ARG) ?: -1
 
                     HistoryDetail(
                         type = type,
@@ -140,16 +146,16 @@ fun NavHostController.navigateSingleTopTo(route: String) =
 
 fun NavHostController.navigateToAddEditHistory(type: Type, id: Int? = -1) {
     this.navigate(
-        "${MainDestinations.HISTORY_DETAIL_ROUTE}/$type".let {
-            if (id != -1) "$it?id=$id" else it
+        "$HISTORY_SCREEN/$type".let {
+            if (id != -1) "$it?${ID_ARG}=$id" else it
         }
     )
 }
 
 fun NavHostController.navigateToAddEditSetting(type: SettingType, id: Int? = -1) {
     this.navigate(
-        "${MainDestinations.SETTING_DETAIL_ROUTE}/$type".let {
-            if (id != -1) "$it?id=$id" else it
+        "$SETTING_SCREEN/$type".let {
+            if (id != -1) "$it?${ID_ARG}=$id" else it
         }
     )
 }
