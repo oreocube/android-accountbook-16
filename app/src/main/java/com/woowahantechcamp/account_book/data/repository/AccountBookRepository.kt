@@ -197,7 +197,7 @@ class AccountBookRepository @Inject constructor(
                 StatisticModel(
                     categoryId = it.categoryId,
                     categoryTitle = it.categoryTitle,
-                    color = Color(it.color),
+                    color = it.color,
                     sum = it.sum
                 )
             })

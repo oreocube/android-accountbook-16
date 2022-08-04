@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.woowahantechcamp.account_book.ui.model.StatisticModel
+import com.woowahantechcamp.account_book.util.expenseColorList
 
 private const val DividerLengthInDegrees = 0f
 
@@ -55,7 +56,7 @@ fun AnimatedCircle(
         values.forEachIndexed { _, data ->
             val sweep = (data.sum / total.toFloat()) * angleOffset
             drawArc(
-                color = data.color,
+                color = expenseColorList[data.color],
                 startAngle = startAngle + DividerLengthInDegrees / 2,
                 sweepAngle = sweep - DividerLengthInDegrees,
                 topLeft = topLeft,

@@ -323,7 +323,7 @@ class AccountBookDataSource @Inject constructor(
                     while (moveToNext()) {
                         val categoryId = getInt(0)
                         val categoryTitle = getString(1)
-                        val color = getLong(2)
+                        val color = getInt(2)
                         val sum = getLong(3)
 
                         items.add(StatisticEntity(categoryId, categoryTitle, color, sum))

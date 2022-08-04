@@ -22,6 +22,7 @@ import com.woowahantechcamp.account_book.ui.component.*
 import com.woowahantechcamp.account_book.ui.model.StatisticModel
 import com.woowahantechcamp.account_book.ui.screen.main.MainViewModel
 import com.woowahantechcamp.account_book.ui.theme.Red
+import com.woowahantechcamp.account_book.util.expenseColorList
 import com.woowahantechcamp.account_book.util.toCurrency
 import kotlin.math.roundToInt
 
@@ -35,7 +36,7 @@ fun GraphScreen(
     val month = mainViewModel.currentDate.value.monthValue
     val isDatePickerDialogVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = year, key2 = month){
+    LaunchedEffect(key1 = month) {
         viewModel.fetchData(year, month)
     }
 
@@ -153,7 +154,7 @@ fun SummaryItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CategoryTag(title = item.categoryTitle, color = item.color)
+        CategoryTag(title = item.categoryTitle, color = expenseColorList[item.color])
         Text(
             text = item.sum.toCurrency(),
             color = MaterialTheme.colors.primary,
