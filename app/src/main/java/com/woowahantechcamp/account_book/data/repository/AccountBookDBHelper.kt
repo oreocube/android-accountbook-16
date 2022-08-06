@@ -5,10 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
-import com.woowahantechcamp.account_book.data.SQL_CREATE_CATEGORY_TABLE
-import com.woowahantechcamp.account_book.data.SQL_CREATE_HISTORY_TABLE
-import com.woowahantechcamp.account_book.data.SQL_CREATE_PAYMENT_TABLE
-import com.woowahantechcamp.account_book.data.SQL_SET_PRAGMA
+import com.woowahantechcamp.account_book.data.*
 import com.woowahantechcamp.account_book.data.entity.CategoryEntity
 
 class AccountBookDBHelper(
@@ -34,11 +31,12 @@ class AccountBookDBHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // TODO
-    }
-
-    override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // TODO
+        if (oldVersion != newVersion) {
+            db.execSQL(SQL_DROP_HISTORY_TABLE)
+            db.execSQL(SQL_DROP_CATEGORY_TABLE)
+            db.execSQL(SQL_DROP_PAYMENT_TABLE)
+            onCreate(db)
+        }
     }
 
     companion object {

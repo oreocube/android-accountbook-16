@@ -33,6 +33,10 @@ const val SQL_CREATE_CATEGORY_TABLE =
 
 const val SQL_SET_PRAGMA = "PRAGMA foreign_keys = ON"
 
+const val SQL_DROP_HISTORY_TABLE = "DROP TABLE IF EXISTS ${HistoryEntry.TABLE_NAME}"
+const val SQL_DROP_CATEGORY_TABLE = "DROP TABLE IF EXISTS ${CategoryEntry.TABLE_NAME}"
+const val SQL_DROP_PAYMENT_TABLE = "DROP TABLE IF EXISTS ${PaymentEntry.TABLE_NAME}"
+
 const val SQL_GET_HISTORY_BY_ID =
     "SELECT ${HistoryEntry.TABLE_NAME}.${BaseColumns._ID}, " +
             "${HistoryEntry.TABLE_NAME}.${HistoryEntry.COLUMN_NAME_TYPE}, " +
@@ -91,6 +95,6 @@ const val SQL_SELECT_GROUP_BY_CATEGORY =
 const val SQL_GET_SUM_GROUP_BY_DATE =
     "SELECT ${HistoryEntry.COLUMN_NAME_DATE}, SUM(${HistoryEntry.COLUMN_NAME_AMOUNT}), ${HistoryEntry.COLUMN_NAME_TYPE} " +
             "FROM ${HistoryEntry.TABLE_NAME} " +
+            "WHERE ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN date(?) AND date(?) " +
             "GROUP BY ${HistoryEntry.COLUMN_NAME_TYPE}, ${HistoryEntry.COLUMN_NAME_DATE} " +
-            "HAVING ${HistoryEntry.COLUMN_NAME_DATE} BETWEEN date(?) AND date(?) " +
             "ORDER BY ${HistoryEntry.COLUMN_NAME_DATE} "
